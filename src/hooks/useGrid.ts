@@ -16,7 +16,7 @@ export interface GridConfig {
     measureWidth: number;
 }
 
- 
+
 export interface GridUtils {
     timeToPixels: (_timeInEighths: number) => number;
     pixelsToTime: (_pixels: number) => number;
@@ -27,7 +27,7 @@ export interface GridUtils {
     getBeatInMeasure: (_timeInEighths: number) => number;
     config: GridConfig;
 }
- 
+
 
 /**
  * Hook that provides grid calculation utilities for the timeline
