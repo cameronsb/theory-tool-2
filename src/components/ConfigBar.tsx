@@ -46,7 +46,7 @@ export function ConfigBar({ mode, onModeChange }: ConfigBarProps) {
           <label>Key</label>
           <select
             value={state.selectedKey}
-            onChange={(e) => actions.setKey(e.target.value as typeof NOTES[number])}
+            onChange={(e) => actions.selectKey(e.target.value as typeof NOTES[number])}
           >
             {NOTES.map((note) => (
               <option key={note} value={note}>

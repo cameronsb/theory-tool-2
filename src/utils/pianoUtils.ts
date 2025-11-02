@@ -7,7 +7,7 @@ export interface PianoKeyData {
   midiNumber: number;
   frequency: number;
   isBlack: boolean;
-  whiteKeyIndex: number; // Index among white keys only
+  whiteKeyIndex: number; // Index among white keys only (for white keys) or left white key (for black keys)
 }
 
 const BLACK_KEY_PATTERN = [false, true, false, true, false, false, true, false, true, false, true, false];
@@ -27,6 +27,8 @@ export function generatePianoKeys(startOctave: number, octaveCount: number): Pia
       const midiNumber = (octave + 1) * 12 + semitone;
       const frequency = 440 * Math.pow(2, (midiNumber - 69) / 12);
 
+      // For black keys, whiteKeyIndex represents the white key to their left
+      // For white keys, it's their actual index
       keys.push({
         note: `${baseNote}${octave}`,
         baseNote,
@@ -34,7 +36,7 @@ export function generatePianoKeys(startOctave: number, octaveCount: number): Pia
         midiNumber,
         frequency,
         isBlack,
-        whiteKeyIndex: isBlack ? -1 : whiteKeyIndex,
+        whiteKeyIndex: isBlack ? whiteKeyIndex - 1 : whiteKeyIndex,
       });
 
       if (!isBlack) {

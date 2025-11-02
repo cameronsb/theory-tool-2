@@ -47,8 +47,10 @@ export function PianoKey({
     : null;
 
   // Calculate position
+  // White keys: positioned at their index
+  // Black keys: positioned between white keys (65% into the left white key)
   const leftPosition = keyData.isBlack
-    ? `calc(${keyData.whiteKeyIndex === 0 ? 0 : keyData.whiteKeyIndex} * var(--white-key-width) + var(--white-key-width) * 0.65)`
+    ? `calc(${keyData.whiteKeyIndex} * var(--white-key-width) + var(--white-key-width) * 0.65)`
     : `calc(${keyData.whiteKeyIndex} * var(--white-key-width))`;
 
   return (
