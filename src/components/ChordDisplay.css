@@ -3,30 +3,172 @@
   height: 100%;
   overflow-y: auto;
   background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.view-mode-toggle {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  align-self: flex-start;
+}
+
+.view-mode-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.view-mode-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+}
+
+.chord-sections-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0; /* Allow flex shrinking */
 }
 
 .chord-section {
-  margin-bottom: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Allow flexbox shrinking */
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .section-title {
   color: white;
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 12px;
-  padding-bottom: 6px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  margin: 0;
+}
+
+.sort-dropdown {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sort-dropdown option {
+  background: #1a1a2e;
+  color: white;
+}
+
+.sort-dropdown:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.sort-dropdown:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(102, 126, 234, 0.5);
 }
 
 .chord-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 8px; /* Default spacing for ungrouped chords */
+  overflow-y: auto; /* Desktop: scrollable if needed */
+  position: relative;
+  z-index: 1;
 }
 
+/* Add extra spacing between subsections when grouped */
+.chord-grid > .chord-subsection {
+  margin-bottom: 8px;
+}
+
+.chord-grid > .chord-subsection:last-child {
+  margin-bottom: 0;
+}
+
+.chord-subsection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.subsection-title {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  padding-left: 4px;
+}
+
+/* Mobile: Stacked layout with max-height */
 @media (max-width: 768px) {
+  .chord-sections-container {
+    flex-direction: column;
+    gap: 16px;
+    height: auto;
+  }
+
+  .chord-section {
+    max-height: 50vh; /* Max height on mobile */
+    overflow: hidden; /* Container doesn't scroll, only grid does */
+  }
+
+  .section-header {
+    flex-wrap: wrap;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .sort-dropdown {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
   .chord-grid {
     gap: 6px;
+    overflow-y: auto; /* Scrollable on mobile */
+  }
+
+  .subsection-title {
+    font-size: 12px;
   }
 }
 

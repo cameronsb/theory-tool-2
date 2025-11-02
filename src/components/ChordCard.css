@@ -5,10 +5,43 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: visible; /* Changed from hidden to allow dropdown to show */
+  isolation: isolate; /* Create stacking context */
+}
+
+.chord-card-main {
+  overflow: hidden; /* Constrain ripple to card bounds */
+  border-radius: 6px;
+  position: relative;
+}
+
+/* Ripple effect - starts small and expands outward on click */
+.chord-card-main::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: translate(-50%, -50%);
+  transition: width 0.8s ease-out, height 0.8s ease-out, opacity 0.8s ease-out;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.chord-card:active .chord-card-main::before {
+  width: 600px;
+  height: 600px;
+  opacity: 0.3;
+  transition: width 0s, height 0s, opacity 0s;
 }
 
 .chord-card.borrowed {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #c44dc7 0%, #d63a51 100%);
 }
 
 .chord-card:hover {
@@ -19,6 +52,7 @@
 .chord-card-main {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
 }
 
@@ -39,19 +73,29 @@
 }
 
 .chord-name {
-  font-size: 13px;
+  font-size: 20px; /* Increased by ~50% from 13px */
   font-weight: 600;
   color: rgba(255, 255, 255, 0.95);
   white-space: nowrap;
+  min-width: 140px; /* Fixed width to accommodate longest chord name (e.g., "C#maj13") */
+  max-width: 140px; /* Prevent expansion beyond intended width */
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .modifier-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 buttons per row */
+  grid-template-rows: repeat(2, 20px); /* 2 rows, fixed height */
+  gap: 4px 4px; /* Slightly more gap between rows for visual grouping */
+  row-gap: 6px; /* Extra space between conceptual groups */
   flex: 1;
   min-width: 0;
+  max-width: clamp(320px, 40vw, 600px); /* Reasonable max on wide screens */
   pointer-events: none;
+  position: relative;
+  z-index: 1;
 }
 
 .modifier-btn {
@@ -63,25 +107,38 @@
   font-size: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
   white-space: nowrap;
-  flex-shrink: 0;
   pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%; /* Fill grid cell */
+  height: 100%; /* Fill grid cell */
 }
 
 .modifier-btn:hover {
   background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
+  /* Removed border-color change to prevent any layout shift */
 }
 
 .modifier-btn.active {
   background: rgba(255, 255, 255, 0.95);
   color: #667eea;
-  border-color: rgba(255, 255, 255, 1);
+  /* Removed border-color change to prevent any layout shift */
 }
 
 .chord-card.borrowed .modifier-btn.active {
-  color: #f5576c;
+  color: #d63a51;
+}
+
+.chord-card.borrowed .chord-numeral,
+.chord-card.borrowed .chord-name {
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .chord-card.playing {
@@ -91,5 +148,70 @@
 
 .chord-card.borrowed.playing {
   box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+}
+
+/* Compact Mode Styles */
+.chord-card-compact {
+  padding: 8px 12px;
+}
+
+.chord-card-compact .chord-card-main::before {
+  /* Ripple effect for compact mode - starts at 20px, grows to 200px */
+  width: 20px;
+  height: 20px;
+}
+
+.chord-card-compact:active .chord-card-main::before {
+  width: 400px;
+  height: 400px;
+}
+
+.chord-card-compact .chord-card-main {
+  gap: 8px;
+}
+
+.chord-card-compact .chord-info {
+  gap: 6px;
+}
+
+.chord-card-compact .chord-numeral {
+  font-size: 14px;
+}
+
+.chord-card-compact .chord-name {
+  font-size: 16px;
+  min-width: 60px;
+  max-width: 60px;
+}
+
+/* Native select for variations */
+.variations-select {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: white;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  min-width: 50px;
+  outline: none;
+}
+
+.variations-select:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.variations-select:focus {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(102, 126, 234, 0.6);
+}
+
+.variations-select option {
+  background: #1a1a2e;
+  color: white;
 }
 

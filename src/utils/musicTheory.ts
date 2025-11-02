@@ -1,4 +1,4 @@
-import type { Note, Mode, ChordData, FrequencyMap, PianoKeyData, NoteWithOctave } from "../types/music";
+import type { Note, Mode, ChordData, ChordType, FrequencyMap, PianoKeyData, NoteWithOctave } from "../types/music";
 
 export const NOTES: Note[] = [
     "C",
@@ -571,13 +571,12 @@ export function noteToMidi(note: NoteWithOctave): number {
 }
 
 /**
- * Get all chords for a given scale
+ * Get all chords for a given scale (diatonic)
  */
 export function getScaleChords(rootNote: Note, mode: Mode) {
     const scaleNotes = getScaleNotes(rootNote, mode);
     const chordData = CHORD_TYPES[mode];
 
-    // TODO: Show sevenths, ninth chords, and other borrowed chords that can work well in the key
     return chordData.triads.map((chord, index) => {
         const chordRootNote = scaleNotes[index];
         return {
@@ -587,6 +586,97 @@ export function getScaleChords(rootNote: Note, mode: Mode) {
             type: chord.type
         };
     });
+}
+
+/**
+ * Get common borrowed chords from parallel key (modal interchange)
+ */
+export function getBorrowedChords(rootNote: Note, mode: Mode) {
+    const rootIndex = NOTES.indexOf(rootNote);
+    const borrowedChords: Array<{
+        numeral: string;
+        rootNote: Note;
+        intervals: number[];
+        type: ChordType;
+    }> = [];
+
+    if (mode === 'major') {
+        // Borrowing from parallel minor
+        // iv chord (minor four) - adds emotional depth
+        const ivRoot = NOTES[(rootIndex + 5) % 12];
+        borrowedChords.push({
+            numeral: 'iv',
+            rootNote: ivRoot,
+            intervals: [0, 3, 7],
+            type: 'min'
+        });
+
+        // bVI chord (flat six) - dreamy, Beatles-esque
+        const bVIRoot = NOTES[(rootIndex + 8) % 12];
+        borrowedChords.push({
+            numeral: 'bVI',
+            rootNote: bVIRoot,
+            intervals: [0, 4, 7],
+            type: 'maj'
+        });
+
+        // bVII chord (flat seven) - modal/rock sound
+        const bVIIRoot = NOTES[(rootIndex + 10) % 12];
+        borrowedChords.push({
+            numeral: 'bVII',
+            rootNote: bVIIRoot,
+            intervals: [0, 4, 7],
+            type: 'maj'
+        });
+
+        // bIII chord (flat three) - Phrygian flavor
+        const bIIIRoot = NOTES[(rootIndex + 3) % 12];
+        borrowedChords.push({
+            numeral: 'bIII',
+            rootNote: bIIIRoot,
+            intervals: [0, 4, 7],
+            type: 'maj'
+        });
+    } else {
+        // Borrowing from parallel major
+        // IV chord (major four) - brightness
+        const IVRoot = NOTES[(rootIndex + 5) % 12];
+        borrowedChords.push({
+            numeral: 'IV',
+            rootNote: IVRoot,
+            intervals: [0, 4, 7],
+            type: 'maj'
+        });
+
+        // VI chord (major six)
+        const VIRoot = NOTES[(rootIndex + 9) % 12];
+        borrowedChords.push({
+            numeral: 'VI',
+            rootNote: VIRoot,
+            intervals: [0, 4, 7],
+            type: 'maj'
+        });
+
+        // VII chord (major seven) - leading tone resolution
+        const VIIRoot = NOTES[(rootIndex + 11) % 12];
+        borrowedChords.push({
+            numeral: 'VII',
+            rootNote: VIIRoot,
+            intervals: [0, 4, 7],
+            type: 'maj'
+        });
+
+        // III chord (major three) - relative major
+        const IIIRoot = NOTES[(rootIndex + 3) % 12];
+        borrowedChords.push({
+            numeral: 'III',
+            rootNote: IIIRoot,
+            intervals: [0, 4, 7],
+            type: 'maj'
+        });
+    }
+
+    return borrowedChords;
 }
 
 /**
