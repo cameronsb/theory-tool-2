@@ -1,13 +1,36 @@
 import type { ReactNode } from "react";
 import { createContext, useReducer, useCallback } from "react";
-import type { Note, Mode, SelectedChord, ChordDisplayMode, ChordInProgression } from "../types/music";
+import type { Note, Mode, SelectedChord, ChordDisplayMode, ChordInProgression, Song, ChordBlock } from "../types/music";
 
 export type NoteSubdivision = "whole" | "quarter" | "eighth";
 
-// State interface
+// Helper function to create an empty Song
+function createEmptySong(): Song {
+    const now = Date.now();
+    return {
+        id: `song-${now}`,
+        name: "Untitled Song",
+        tempo: 120,
+        timeSignature: {
+            numerator: 4,
+            denominator: 4,
+        },
+        key: "C",
+        mode: "major",
+        tracks: {
+            chords: { blocks: [] },
+            melody: { notes: [] },
+            drums: { patterns: [] },
+        },
+        metadata: {
+            createdAt: now,
+            updatedAt: now,
+        },
+    };
+}
+
 interface MusicState {
-    selectedKey: Note;
-    mode: Mode;
+    song: Song;
     selectedChords: SelectedChord[];
     chordDisplayMode: ChordDisplayMode;
     chordProgression: ChordInProgression[];
@@ -19,7 +42,6 @@ interface MusicState {
     playbackState: {
         isPlaying: boolean;
         currentBeat: number;
-        tempo: number;
         loop: boolean;
         subdivision: NoteSubdivision;
     };
@@ -42,12 +64,18 @@ type MusicAction =
     | { type: "SET_PLAYBACK_BEAT"; payload: number }
     | { type: "SET_TEMPO"; payload: number }
     | { type: "TOGGLE_LOOP" }
-    | { type: "SET_SUBDIVISION"; payload: NoteSubdivision };
+    | { type: "SET_SUBDIVISION"; payload: NoteSubdivision }
+    | { type: "ADD_CHORD_BLOCK"; payload: ChordBlock }
+    | { type: "UPDATE_CHORD_BLOCK"; payload: ChordBlock }
+    | { type: "REMOVE_CHORD_BLOCK"; payload: string }
+    | { type: "REORDER_CHORD_BLOCKS"; payload: { fromIndex: number; toIndex: number } }
+    | { type: "MOVE_CHORD_BLOCK"; payload: { id: string; newPosition: number } }
+    | { type: "UPDATE_SONG"; payload: Partial<Song> }
+    | { type: "LOAD_SONG"; payload: Song };
 
 // Initial state
 const initialState: MusicState = {
-    selectedKey: "C",
-    mode: "major",
+    song: createEmptySong(),
     selectedChords: [],
     chordDisplayMode: "select",
     chordProgression: [],
@@ -59,7 +87,6 @@ const initialState: MusicState = {
     playbackState: {
         isPlaying: false,
         currentBeat: 0,
-        tempo: 120,
         loop: false,
         subdivision: "quarter",
     },
@@ -67,12 +94,28 @@ const initialState: MusicState = {
 
 // Reducer
 function musicReducer(state: MusicState, action: MusicAction): MusicState {
+    const now = Date.now();
+
     switch (action.type) {
         case "SELECT_KEY":
-            return { ...state, selectedKey: action.payload };
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    key: action.payload,
+                    metadata: { ...state.song.metadata, updatedAt: now }
+                }
+            };
 
         case "SET_MODE":
-            return { ...state, mode: action.payload };
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    mode: action.payload,
+                    metadata: { ...state.song.metadata, updatedAt: now }
+                }
+            };
 
         case "SELECT_CHORD":
             // In select mode, replace selection; in build mode, keep selection
@@ -138,7 +181,134 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
         case "SET_TEMPO":
             return {
                 ...state,
-                playbackState: { ...state.playbackState, tempo: action.payload },
+                song: {
+                    ...state.song,
+                    tempo: action.payload,
+                    metadata: { ...state.song.metadata, updatedAt: now }
+                },
+                playbackState: { ...state.playbackState },
+            };
+
+        case "ADD_CHORD_BLOCK":
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        chords: {
+                            blocks: [...state.song.tracks.chords.blocks, action.payload]
+                        }
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now }
+                }
+            };
+
+        case "UPDATE_CHORD_BLOCK":
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        chords: {
+                            blocks: state.song.tracks.chords.blocks.map(block =>
+                                block.id === action.payload.id ? action.payload : block
+                            )
+                        }
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now }
+                }
+            };
+
+        case "REMOVE_CHORD_BLOCK":
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        chords: {
+                            blocks: state.song.tracks.chords.blocks.filter(
+                                block => block.id !== action.payload
+                            )
+                        }
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now }
+                }
+            };
+
+        case "REORDER_CHORD_BLOCKS": {
+            const blocks = [...state.song.tracks.chords.blocks];
+            const [movedBlock] = blocks.splice(action.payload.fromIndex, 1);
+            blocks.splice(action.payload.toIndex, 0, movedBlock);
+
+            let cumulativePosition = 0;
+            const reorderedBlocks = blocks.map(block => {
+                const updatedBlock = { ...block, position: cumulativePosition };
+                cumulativePosition += block.duration;
+                return updatedBlock;
+            });
+
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        chords: {
+                            blocks: reorderedBlocks
+                        }
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now }
+                }
+            };
+        }
+
+        case "MOVE_CHORD_BLOCK": {
+            const blocks = state.song.tracks.chords.blocks.map(block =>
+                block.id === action.payload.id
+                    ? { ...block, position: Math.max(0, action.payload.newPosition) }
+                    : block
+            );
+
+            const sortedBlocks = [...blocks].sort((a, b) => a.position - b.position);
+
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    tracks: {
+                        ...state.song.tracks,
+                        chords: {
+                            blocks: sortedBlocks
+                        }
+                    },
+                    metadata: { ...state.song.metadata, updatedAt: now }
+                }
+            };
+        }
+
+        case "UPDATE_SONG":
+            return {
+                ...state,
+                song: {
+                    ...state.song,
+                    ...action.payload,
+                    metadata: {
+                        ...state.song.metadata,
+                        ...action.payload.metadata,
+                        updatedAt: now
+                    }
+                }
+            };
+
+        case "LOAD_SONG":
+            return {
+                ...state,
+                song: action.payload,
+                chordProgression: [],
+                selectedChords: [],
             };
 
         case "TOGGLE_LOOP":
@@ -178,6 +348,13 @@ interface MusicContextType {
         setTempo: (tempo: number) => void;
         toggleLoop: () => void;
         setSubdivision: (subdivision: NoteSubdivision) => void;
+        addChordBlock: (block: ChordBlock) => void;
+        updateChordBlock: (block: ChordBlock) => void;
+        removeChordBlock: (id: string) => void;
+        reorderChordBlocks: (fromIndex: number, toIndex: number) => void;
+        moveChordBlock: (id: string, newPosition: number) => void;
+        updateSong: (updates: Partial<Song>) => void;
+        loadSong: (song: Song) => void;
     };
 }
 /* eslint-enable no-unused-vars */
@@ -297,6 +474,34 @@ export function MusicProvider({ children }: MusicProviderProps) {
         dispatch({ type: "SET_SUBDIVISION", payload: subdivision });
     }, []);
 
+    const addChordBlock = useCallback((block: ChordBlock) => {
+        dispatch({ type: "ADD_CHORD_BLOCK", payload: block });
+    }, []);
+
+    const updateChordBlock = useCallback((block: ChordBlock) => {
+        dispatch({ type: "UPDATE_CHORD_BLOCK", payload: block });
+    }, []);
+
+    const removeChordBlock = useCallback((id: string) => {
+        dispatch({ type: "REMOVE_CHORD_BLOCK", payload: id });
+    }, []);
+
+    const reorderChordBlocks = useCallback((fromIndex: number, toIndex: number) => {
+        dispatch({ type: "REORDER_CHORD_BLOCKS", payload: { fromIndex, toIndex } });
+    }, []);
+
+    const moveChordBlock = useCallback((id: string, newPosition: number) => {
+        dispatch({ type: "MOVE_CHORD_BLOCK", payload: { id, newPosition } });
+    }, []);
+
+    const updateSong = useCallback((updates: Partial<Song>) => {
+        dispatch({ type: "UPDATE_SONG", payload: updates });
+    }, []);
+
+    const loadSong = useCallback((song: Song) => {
+        dispatch({ type: "LOAD_SONG", payload: song });
+    }, []);
+
     const value: MusicContextType = {
         state,
         actions: {
@@ -315,6 +520,13 @@ export function MusicProvider({ children }: MusicProviderProps) {
             setTempo,
             toggleLoop,
             setSubdivision,
+            addChordBlock,
+            updateChordBlock,
+            removeChordBlock,
+            reorderChordBlocks,
+            moveChordBlock,
+            updateSong,
+            loadSong,
         },
     };
 

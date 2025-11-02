@@ -1,17 +1,31 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo, useState } from 'react';
 import { useMusic } from '../hooks/useMusic';
 import { useAudioEngine } from '../hooks/useAudioEngine';
+import { useGrid } from '../hooks/useGrid';
 import { getChordFrequencies } from '../utils/musicTheory';
-import type { ChordInProgression } from '../types/music';
+import { Ruler } from './Ruler';
+import { ChordBlock } from './ChordBlock';
+import type { ChordBlock as ChordBlockType } from '../types/music';
 import './ChordTimeline.css';
 
 export function ChordTimeline() {
   const { state, actions } = useMusic();
   const { playChord } = useAudioEngine();
+  const grid = useGrid();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const currentIndexRef = useRef(0);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const playbackStartTime = useRef<number>(0);
+  const currentTimeInEighths = useRef<number>(0);
 
-  // Clean up interval on unmount
+  const chordBlocks = state.song.tracks.chords.blocks;
+
+  const totalDurationInEighths = useMemo(() => {
+    return chordBlocks.reduce((sum, block) => sum + block.duration, 0);
+  }, [chordBlocks]);
+
+  const totalMeasures = Math.max(8, Math.ceil(totalDurationInEighths / grid.config.eighthsPerMeasure) + 2);
+  const timelineWidth = totalMeasures * grid.config.measureWidth;
+
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
@@ -21,76 +35,76 @@ export function ChordTimeline() {
     };
   }, []);
 
-  // Handle playback start/stop
   const handlePlayPause = () => {
     if (state.playbackState.isPlaying) {
-      // Stop playback
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
       actions.setPlaybackPlaying(false);
-      actions.setPlaybackBeat(0);
-      currentIndexRef.current = 0;
+      currentTimeInEighths.current = 0;
     } else {
-      // Start playback
-      if (state.chordProgression.length === 0) return;
+      if (chordBlocks.length === 0) return;
 
       actions.setPlaybackPlaying(true);
-      currentIndexRef.current = 0;
-      actions.setPlaybackBeat(0);
+      playbackStartTime.current = Date.now();
+      currentTimeInEighths.current = 0;
 
-      const msPerBeat = 60000 / state.playbackState.tempo;
+      const msPerEighth = (60000 / state.song.tempo) / 2;
+      let lastChordIndex = -1;
 
-      // Play first chord immediately
-      const firstChord = state.chordProgression[0];
+      const firstChord = chordBlocks[0];
       if (firstChord) {
         const frequencies = getChordFrequencies(firstChord.rootNote, firstChord.intervals, 4);
-        playChord(frequencies, firstChord.duration * (msPerBeat / 1000));
+        playChord(frequencies, grid.eighthsToBeats(firstChord.duration) * (msPerEighth * 2 / 1000));
+        lastChordIndex = 0;
+        actions.setPlaybackBeat(0);
       }
 
-      // Set up interval for subsequent chords
-      let chordIndex = 0;
-      let beatCount = 0;
-
       intervalRef.current = setInterval(() => {
-        beatCount++;
+        const elapsed = Date.now() - playbackStartTime.current;
+        currentTimeInEighths.current = elapsed / msPerEighth;
 
-        // Check if we need to move to next chord
-        const currentChord = state.chordProgression[chordIndex];
-        if (currentChord && beatCount >= currentChord.duration) {
-          beatCount = 0;
-          chordIndex++;
+        const currentChordIndex = chordBlocks.findIndex((block) => {
+          const blockEnd = block.position + block.duration;
+          return currentTimeInEighths.current >= block.position && currentTimeInEighths.current < blockEnd;
+        });
 
-          if (chordIndex >= state.chordProgression.length) {
-            if (state.playbackState.loop) {
-              chordIndex = 0;
-            } else {
-              // Stop playback
-              if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-                intervalRef.current = null;
-              }
-              actions.setPlaybackPlaying(false);
-              actions.setPlaybackBeat(0);
-              return;
+        if (currentChordIndex !== -1 && currentChordIndex !== lastChordIndex) {
+          const chord = chordBlocks[currentChordIndex];
+          const frequencies = getChordFrequencies(chord.rootNote, chord.intervals, 4);
+          playChord(frequencies, grid.eighthsToBeats(chord.duration) * (msPerEighth * 2 / 1000));
+          lastChordIndex = currentChordIndex;
+          actions.setPlaybackBeat(currentChordIndex);
+        }
+
+        if (currentTimeInEighths.current >= totalDurationInEighths) {
+          if (state.playbackState.loop) {
+            playbackStartTime.current = Date.now();
+            currentTimeInEighths.current = 0;
+            lastChordIndex = -1;
+          } else {
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
             }
-          }
-
-          // Play next chord
-          const nextChord = state.chordProgression[chordIndex];
-          if (nextChord) {
-            const frequencies = getChordFrequencies(nextChord.rootNote, nextChord.intervals, 4);
-            playChord(frequencies, nextChord.duration * (msPerBeat / 1000));
-            actions.setPlaybackBeat(chordIndex);
+            actions.setPlaybackPlaying(false);
+            currentTimeInEighths.current = 0;
           }
         }
-      }, msPerBeat);
+      }, 50);
     }
   };
 
-  const handleRemoveChord = (id: string) => {
-    // Stop playback if playing
+  const handleChordResize = (id: string, newDuration: number) => {
+    const block = chordBlocks.find(b => b.id === id);
+    if (block) {
+      const updatedBlock = { ...block, duration: newDuration };
+      actions.updateChordBlock(updatedBlock);
+    }
+  };
+
+  const handleChordDelete = (id: string) => {
     if (state.playbackState.isPlaying) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -99,17 +113,15 @@ export function ChordTimeline() {
       actions.setPlaybackPlaying(false);
       actions.setPlaybackBeat(0);
     }
-    actions.removeFromProgression(id);
+    actions.removeChordBlock(id);
   };
 
-  const handlePlayChord = (chord: ChordInProgression) => {
-    // Calculate frequencies for the chord notes
-    const frequencies = getChordFrequencies(chord.rootNote, chord.intervals, 4);
+  const handleChordPlay = (block: ChordBlockType) => {
+    const frequencies = getChordFrequencies(block.rootNote, block.intervals, 4);
     playChord(frequencies);
   };
 
   const handleClearProgression = () => {
-    // Stop playback if playing
     if (state.playbackState.isPlaying) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -118,74 +130,87 @@ export function ChordTimeline() {
       actions.setPlaybackPlaying(false);
       actions.setPlaybackBeat(0);
     }
-    actions.clearProgression();
+    chordBlocks.forEach(block => actions.removeChordBlock(block.id));
   };
 
-  const totalDuration = state.chordProgression.reduce(
-    (sum, chord) => sum + chord.duration,
-    0
-  );
+  const [playheadPosition, setPlayheadPosition] = useState(0);
+
+  useEffect(() => {
+    if (!state.playbackState.isPlaying) {
+      setPlayheadPosition(0);
+      return;
+    }
+
+    const updatePlayhead = () => {
+      setPlayheadPosition(grid.timeToPixels(currentTimeInEighths.current));
+      requestAnimationFrame(updatePlayhead);
+    };
+
+    const animationId = requestAnimationFrame(updatePlayhead);
+    return () => cancelAnimationFrame(animationId);
+  }, [state.playbackState.isPlaying, grid]);
 
   return (
-    <div className="chord-timeline">
+    <div className="chord-timeline-grid">
       <div className="timeline-header">
-        <h3>Chord Progression</h3>
-        <div className="timeline-controls">
-          <span className="duration-info">
-            {state.chordProgression.length} chords • {totalDuration} beats
-          </span>
-          {state.chordProgression.length > 0 && (
-            <button
-              className="clear-button"
-              onClick={handleClearProgression}
-              title="Clear progression"
-            >
-              Clear
-            </button>
-          )}
+        <h3>Chord Timeline</h3>
+        <div className="timeline-info">
+          {chordBlocks.length} chords • {grid.eighthsToBeats(totalDurationInEighths).toFixed(1)} beats
         </div>
+        {chordBlocks.length > 0 && (
+          <button
+            className="clear-button"
+            onClick={handleClearProgression}
+            title="Clear timeline"
+          >
+            Clear
+          </button>
+        )}
       </div>
 
-      <div className="timeline-track">
-        {state.chordProgression.length === 0 ? (
-          <div className="empty-state">
-            Click chords from the palette to build your progression
-          </div>
-        ) : (
-          <div className="chord-sequence">
-            {state.chordProgression.map((chord, index) => (
+      <Ruler totalMeasures={totalMeasures} />
+
+      <div className="timeline-scroll-container">
+        <div
+          ref={timelineRef}
+          className="timeline-canvas"
+          style={{ width: timelineWidth }}
+        >
+          <div className="timeline-grid-background">
+            {Array.from({ length: totalMeasures }, (_, i) => (
               <div
-                key={chord.id}
-                className={`chord-block ${state.playbackState.isPlaying && state.playbackState.currentBeat === index ? 'playing' : ''}`}
-                style={{
-                  '--duration': chord.duration,
-                } as React.CSSProperties}
-              >
-                <div className="chord-block-content">
-                  <span className="chord-numeral">{chord.numeral}</span>
-                  <span className="chord-root">{chord.rootNote}</span>
-                  <span className="chord-duration">{chord.duration} beats</span>
-                </div>
-                <div className="chord-block-actions">
-                  <button
-                    className="play-chord-btn"
-                    onClick={() => handlePlayChord(chord)}
-                    title="Play chord"
-                  >
-                    ▶
-                  </button>
-                  <button
-                    className="remove-chord-btn"
-                    onClick={() => handleRemoveChord(chord.id)}
-                    title="Remove chord"
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
+                key={i}
+                className="measure-column"
+                style={{ width: grid.config.measureWidth }}
+              />
             ))}
           </div>
-        )}
+
+          <div className="timeline-tracks">
+            <div className="chord-track">
+              {chordBlocks.map((block, index) => (
+                <ChordBlock
+                  key={block.id}
+                  block={block}
+                  blockIndex={index}
+                  isPlaying={state.playbackState.isPlaying && state.playbackState.currentBeat === index}
+                  onResize={handleChordResize}
+                  onDelete={handleChordDelete}
+                  onPlay={handleChordPlay}
+                  onReorder={actions.reorderChordBlocks}
+                  onMove={actions.moveChordBlock}
+                />
+              ))}
+            </div>
+          </div>
+
+          {state.playbackState.isPlaying && (
+            <div
+              className="playhead"
+              style={{ left: `${playheadPosition}px` }}
+            />
+          )}
+        </div>
       </div>
 
       <div className="timeline-footer">
@@ -193,6 +218,7 @@ export function ChordTimeline() {
           <button
             className="play-button"
             onClick={handlePlayPause}
+            disabled={chordBlocks.length === 0}
           >
             {state.playbackState.isPlaying ? '⏸ Pause' : '▶ Play'}
           </button>
@@ -208,7 +234,7 @@ export function ChordTimeline() {
               type="number"
               min="60"
               max="180"
-              value={state.playbackState.tempo}
+              value={state.song.tempo}
               onChange={(e) => actions.setTempo(parseInt(e.target.value) || 120)}
             />
             <span>BPM</span>

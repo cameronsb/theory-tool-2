@@ -30,9 +30,9 @@ export function Piano({
 
   // Get scale notes for highlighting
   const scaleNotes = useMemo(() => {
-    const notes = getScaleNotes(state.selectedKey, state.mode);
+    const notes = getScaleNotes(state.song.key, state.song.mode);
     return new Set(notes);
-  }, [state.selectedKey, state.mode]);
+  }, [state.song.key, state.song.mode]);
 
   // Get chord notes for highlighting
   const chordNotes = useMemo(() => {
@@ -67,8 +67,8 @@ export function Piano({
             isInScale={scaleNotes.has(keyData.baseNote)}
             isInChord={chordNotes.has(keyData.baseNote)}
             showScaleDegree={showScaleDegrees}
-            selectedKey={state.selectedKey}
-            mode={state.mode}
+            selectedKey={state.song.key}
+            mode={state.song.mode}
           />
         ))}
       </div>

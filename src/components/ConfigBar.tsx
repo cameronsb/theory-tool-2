@@ -47,7 +47,7 @@ export function ConfigBar({ mode, onModeChange }: ConfigBarProps) {
         <div className="control-group">
           <label>Key</label>
           <select
-            value={state.selectedKey}
+            value={state.song.key}
             onChange={(e) => actions.selectKey(e.target.value as typeof NOTES[number])}
           >
             {NOTES.map((note) => (
@@ -61,7 +61,7 @@ export function ConfigBar({ mode, onModeChange }: ConfigBarProps) {
         <div className="control-group">
           <label>Scale</label>
           <select
-            value={state.mode}
+            value={state.song.mode}
             onChange={(e) => actions.setMode(e.target.value as 'major' | 'minor')}
           >
             <option value="major">Major</option>
