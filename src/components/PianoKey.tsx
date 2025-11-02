@@ -1,18 +1,20 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { PianoKeyData } from '../utils/pianoUtils';
 import { getScaleDegreeNumeral } from '../utils/musicTheory';
 import type { Note } from '../types/music';
 import './PianoKey.css';
 
+/* eslint-disable no-unused-vars */
 interface PianoKeyProps {
   keyData: PianoKeyData;
-  onPress: (note: string, frequency: number) => void;
+  onPress: (frequency: number) => void;
   isInScale: boolean;
   isInChord: boolean;
   showScaleDegree?: boolean;
   selectedKey: Note;
   mode: 'major' | 'minor';
 }
+/* eslint-enable no-unused-vars */
 
 export function PianoKey({
   keyData,
@@ -27,9 +29,9 @@ export function PianoKey({
 
   const handlePress = useCallback(() => {
     setIsPressed(true);
-    onPress(keyData.note, keyData.frequency);
+    onPress(keyData.frequency);
     setTimeout(() => setIsPressed(false), 200);
-  }, [keyData, onPress]);
+  }, [keyData.frequency, onPress]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();

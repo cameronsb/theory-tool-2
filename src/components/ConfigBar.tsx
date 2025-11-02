@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { useMusic } from '../contexts/MusicContext';
+import { useMusic } from '../hooks/useMusic';
 import { NOTES } from '../utils/musicTheory';
 import './ConfigBar.css';
 
 type Mode = 'learn' | 'build';
 
+/* eslint-disable no-unused-vars */
 interface ConfigBarProps {
   mode: Mode;
   onModeChange: (mode: Mode) => void;
 }
+/* eslint-enable no-unused-vars */
 
 export function ConfigBar({ mode, onModeChange }: ConfigBarProps) {
   const { state, actions } = useMusic();

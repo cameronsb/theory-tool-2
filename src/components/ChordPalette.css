@@ -1,0 +1,73 @@
+.chord-palette {
+  background: var(--surface-bg);
+  border-radius: 8px;
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chord-palette-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chord-palette-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.chord-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  flex: 1;
+  align-content: start;
+}
+
+.chord-button {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 60px;
+}
+
+.chord-button:hover {
+  background: var(--hover-bg);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chord-button.selected {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.chord-button.selected .chord-numeral,
+.chord-button.selected .chord-notes {
+  color: white;
+}
+
+.chord-numeral {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.chord-notes {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { createContext, useContext, useReducer, useCallback } from "react";
+import { createContext, useReducer, useCallback } from "react";
 import type { Note, Mode, SelectedChord, ChordDisplayMode, ChordInProgression } from "../types/music";
 
 export type NoteSubdivision = "whole" | "quarter" | "eighth";
@@ -159,6 +159,7 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
 }
 
 // Context interface with state and actions
+/* eslint-disable no-unused-vars */
 interface MusicContextType {
     state: MusicState;
     actions: {
@@ -179,9 +180,11 @@ interface MusicContextType {
         setSubdivision: (subdivision: NoteSubdivision) => void;
     };
 }
+/* eslint-enable no-unused-vars */
 
 // Create context
-const MusicContext = createContext<MusicContextType | undefined>(undefined);
+// eslint-disable-next-line react-refresh/only-export-components
+export const MusicContext = createContext<MusicContextType | undefined>(undefined);
 
 // Provider component
 interface MusicProviderProps {
@@ -318,11 +321,3 @@ export function MusicProvider({ children }: MusicProviderProps) {
     );
 }
 
-// Custom hook for consuming context
-export function useMusic() {
-    const context = useContext(MusicContext);
-    if (!context) {
-        throw new Error("useMusic must be used within a MusicProvider");
-    }
-    return context;
-}

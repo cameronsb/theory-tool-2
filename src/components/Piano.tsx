@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { useMusic } from '../contexts/MusicContext';
+import React, { useMemo } from 'react';
+import { useMusic } from '../hooks/useMusic';
 import { useAudioEngine } from '../hooks/useAudioEngine';
 import { PianoKey } from './PianoKey';
 import { generatePianoKeys, getWhiteKeyCount } from '../utils/pianoUtils';
@@ -47,7 +47,7 @@ export function Piano({
     return notes;
   }, [state.selectedChords]);
 
-  const handleKeyPress = (note: string, frequency: number) => {
+  const handleKeyPress = (frequency: number) => {
     playNote(frequency);
   };
 
