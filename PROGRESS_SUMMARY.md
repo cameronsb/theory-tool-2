@@ -1,10 +1,10 @@
 # Piano Redesign - Progress Summary
-**Date:** November 2, 2025  
-**Commit:** e57b97e
+**Date:** November 2, 2025
+**Commit:** 9c292bf
 
 ## 🎯 What Was Accomplished
 
-### ✅ Completed Tasks (3 of 8 from OVERVIEW_PLAN.md)
+### ✅ Completed Tasks (4 of 8 from OVERVIEW_PLAN.md)
 
 1. **CRITICAL - Data Model Foundation** ✅
    - Created proper `Song` interface as single source of truth
@@ -28,6 +28,15 @@
    - **Smooth playhead**: Uses requestAnimationFrame for 60fps animation
    - Horizontal scrolling timeline
    - Click to preview chords
+
+4. **HIGH - Improved Playback Engine** ✅
+   - Created `usePlayback()` hook with Web Audio API scheduling
+   - Lookahead buffer (100ms) for sample-accurate timing
+   - Uses `AudioContext.currentTime` instead of `Date.now()`
+   - Event queue prevents duplicate scheduling
+   - Separate scheduler (25ms interval) and UI updates (60fps RAF)
+   - Fixed loop playback bugs (first chord skipping/double-layering)
+   - Proper cleanup on pause/stop
 
 ## 🎼 Current State
 
@@ -68,18 +77,14 @@ useGrid converts 8th notes → pixels for display
 - **Data Model**: `src/types/music.ts` - All TypeScript interfaces
 - **State**: `src/contexts/MusicContext.tsx` - Song state + actions
 - **Grid Logic**: `src/hooks/useGrid.ts` - Time/pixel conversions
+- **Playback**: `src/hooks/usePlayback.ts` - Web Audio scheduling engine
+- **Audio**: `src/hooks/useAudioEngine.ts` - Soundfont player wrapper
 - **Timeline**: `src/components/ChordTimeline.tsx` - Main timeline editor
 - **Chord Blocks**: `src/components/ChordBlock.tsx` - Individual chord with drag/resize
 - **Ruler**: `src/components/Ruler.tsx` - Visual measure/beat display
-- **Palette**: `src/components/ChordPalette.tsx` - Chord selection sidebar
+- **Palette**: `src/components/ChordPalette.tsx` - Chord selection (vertical stack)
 
-## 🚧 What's NOT Done (5 remaining tasks)
-
-### HIGH Priority:
-4. **Improve Playback Engine** ⏳
-   - Current: Basic setInterval approach
-   - Needed: Web Audio API scheduling with lookahead
-   - Issue: Not precise enough for complex rhythms
+## 🚧 What's NOT Done (4 remaining tasks)
 
 ### MEDIUM Priority:
 5. **Complete Learn Mode** ⏳
@@ -106,7 +111,6 @@ useGrid converts 8th notes → pixels for display
 ## 🐛 Known Issues
 
 ### Minor:
-- **Playback timing**: Uses setInterval (50ms) - not sample-accurate
 - **Overlapping chords**: Can position chords on top of each other (not prevented)
 - **No undo/redo**: No history management
 - **No visual feedback**: For grid snapping (could show snap lines)
@@ -119,17 +123,16 @@ useGrid converts 8th notes → pixels for display
 ## 📋 Next Agent Recommendations
 
 ### Immediate Tasks (if continuing on OVERVIEW_PLAN.md):
-1. **Task 4**: Improve playback engine
-   - Replace setInterval with Web Audio scheduling
-   - Add lookahead buffer (100ms)
-   - Use AudioContext.currentTime for precise scheduling
-   - Add visual feedback during scheduling
-
-2. **Task 5**: Complete Learn Mode
+1. **Task 5**: Complete Learn Mode
    - Build ChordDisplay grid component
    - Add ChordCard with hover-to-show modifiers
    - Implement chord extensions ([7], [maj7], [9], etc.)
    - Wire up audio preview
+
+2. **Task 6**: Add Recording
+   - Create useRecorder() hook
+   - Implement melody track
+   - Add quantization options
 
 ### Alternative Focus Areas:
 - **Polish existing features**: Add undo/redo, better visual feedback
@@ -141,7 +144,8 @@ useGrid converts 8th notes → pixels for display
 - All positions stored in 8th notes (not pixels)
 - Grid constants in `useGrid.ts`: `PIXELS_PER_EIGHTH = 20px`
 - Time signature changes require grid recalculation
-- Playhead updates at 60fps via requestAnimationFrame
+- Playback uses Web Audio scheduling with 100ms lookahead
+- Scheduler runs every 25ms, playhead updates at 60fps
 - ChordBlocks automatically sort by position after move
 
 ## 🎨 UI/UX Notes
@@ -170,12 +174,12 @@ npm run build        # Production build
 
 ## 📝 Code Quality
 
-✅ All TypeScript types defined  
-✅ ESLint passing (0 warnings)  
-✅ No console errors  
-✅ No meta-commentary in code  
-✅ Clean data model with single source of truth  
-✅ Proper React patterns (hooks, memoization, refs)  
+✅ All TypeScript types defined
+✅ ESLint passing (0 warnings)
+✅ No console errors
+✅ No meta-commentary in code
+✅ Clean data model with single source of truth
+✅ Proper React patterns (hooks, memoization, refs)
 
 ---
 
