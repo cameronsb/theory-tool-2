@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { createContext, useReducer, useCallback } from "react";
 import type { Note, Mode, SelectedChord, ChordDisplayMode, ChordInProgression, Song, ChordBlock } from "../types/music";
+import { useAudioEngine } from "../hooks/useAudioEngine";
 
 export type NoteSubdivision = "whole" | "quarter" | "eighth";
 
@@ -332,6 +333,13 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
  
 interface MusicContextType {
     state: MusicState;
+    audio: {
+        playNote: (frequency: number, duration?: number) => Promise<void>;
+        playChord: (frequencies: number[], duration?: number) => Promise<void>;
+        loading: boolean;
+        audioContext: AudioContext | null;
+        instrument: any | null;
+    };
     actions: {
         selectKey: (key: Note) => void;
         setMode: (mode: Mode) => void;
@@ -370,6 +378,7 @@ interface MusicProviderProps {
 
 export function MusicProvider({ children }: MusicProviderProps) {
     const [state, dispatch] = useReducer(musicReducer, initialState);
+    const { playNote, playChord, loading, audioContext, instrument } = useAudioEngine();
 
     // Action creators
     const selectKey = useCallback((key: Note) => {
@@ -504,6 +513,13 @@ export function MusicProvider({ children }: MusicProviderProps) {
 
     const value: MusicContextType = {
         state,
+        audio: {
+            playNote,
+            playChord,
+            loading,
+            audioContext,
+            instrument,
+        },
         actions: {
             selectKey,
             setMode,

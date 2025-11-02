@@ -1,4 +1,5 @@
 import { Piano } from './Piano';
+import { ChordDisplay } from './ChordDisplay';
 import './LearnMode.css';
 
 export function LearnMode() {
@@ -7,11 +8,7 @@ export function LearnMode() {
       <div className="piano-section">
         <Piano startOctave={4} octaveCount={2} showScaleDegrees={true} />
       </div>
-      <div className="chord-display">
-        <div className="chord-placeholder">
-          Chord Display (Roman Numerals)
-        </div>
-      </div>
+      <ChordDisplay />
     </div>
   );
 }

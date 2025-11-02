@@ -59,25 +59,42 @@ export function useAudioEngine() {
         initAudio();
     }, []);
 
-    const playNote = useCallback((frequency: number, duration = 0.3) => {
-        const { instrument } = audioRef.current;
-        if (!instrument) return;
+    const playNote = useCallback(async (frequency: number, duration = 0.3) => {
+        const { instrument, initialized, context } = audioRef.current;
+        if (!instrument || !initialized || !context) {
+            console.warn('Audio engine not ready yet');
+            return;
+        }
+
+        // Resume audio context if suspended
+        if (context.state === 'suspended') {
+            await context.resume();
+        }
 
         // Convert frequency to MIDI note number
         const midiNote = frequencyToMidi(frequency);
 
-        // Play the note with the sampled piano sound
-        instrument.play(midiNote, 0, { duration, gain: 0.8 });
+        // Play the note with the sampled piano sound - use currentTime for immediate playback
+        instrument.play(midiNote, context.currentTime, { duration, gain: 0.8 });
     }, []);
 
-    const playChord = useCallback((frequencies: number[], duration = 0.8) => {
-        const { instrument } = audioRef.current;
-        if (!instrument) return;
+    const playChord = useCallback(async (frequencies: number[], duration = 0.8) => {
+        const { instrument, initialized, context } = audioRef.current;
+        if (!instrument || !initialized || !context) {
+            console.warn('Audio engine not ready yet');
+            return;
+        }
 
-        // Play all notes simultaneously
+        // Resume audio context if suspended
+        if (context.state === 'suspended') {
+            await context.resume();
+        }
+
+        // Play all notes simultaneously - use currentTime for immediate playback
+        const now = context.currentTime;
         frequencies.forEach((freq) => {
             const midiNote = frequencyToMidi(freq);
-            instrument.play(midiNote, 0, { duration, gain: 0.6 });
+            instrument.play(midiNote, now, { duration, gain: 0.6 });
         });
     }, []);
 

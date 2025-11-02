@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useMusic } from '../hooks/useMusic';
-import { useAudioEngine } from '../hooks/useAudioEngine';
 import { PianoKey } from './PianoKey';
 import { generatePianoKeys, getWhiteKeyCount } from '../utils/pianoUtils';
 import { getScaleNotes, NOTES } from '../utils/musicTheory';
@@ -18,8 +17,7 @@ export function Piano({
   octaveCount = 2,
   showScaleDegrees = false
 }: PianoProps) {
-  const { state } = useMusic();
-  const { playNote } = useAudioEngine();
+  const { state, audio } = useMusic();
 
   // Generate piano keys
   const keys = useMemo(() => {
@@ -47,8 +45,8 @@ export function Piano({
     return notes;
   }, [state.selectedChords]);
 
-  const handleKeyPress = (frequency: number) => {
-    playNote(frequency);
+  const handleKeyPress = async (frequency: number) => {
+    await audio.playNote(frequency);
   };
 
   return (

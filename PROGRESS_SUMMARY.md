@@ -1,10 +1,10 @@
 # Piano Redesign - Progress Summary
 **Date:** November 2, 2025
-**Commit:** 9c292bf
+**Last Updated:** Session 3
 
 ## 🎯 What Was Accomplished
 
-### ✅ Completed Tasks (4 of 8 from OVERVIEW_PLAN.md)
+### ✅ Completed Tasks (5 of 8 from OVERVIEW_PLAN.md)
 
 1. **CRITICAL - Data Model Foundation** ✅
    - Created proper `Song` interface as single source of truth
@@ -38,9 +38,20 @@
    - Fixed loop playback bugs (first chord skipping/double-layering)
    - Proper cleanup on pause/stop
 
+5. **MEDIUM - Complete Learn Mode** ✅
+   - Built `ChordDisplay` component with responsive grid layout
+   - Created `ChordCard` component with hover-to-show modifier buttons
+   - Implemented chord extensions: 7, maj7, 9, 11, 13, sus2, sus4, add9
+   - Added modifier state management (toggle multiple modifiers)
+   - Wired up audio preview - click cards to hear modified chords
+   - Visual distinction: diatonic chords (purple gradient) vs borrowed (pink gradient)
+   - Smooth hover animations and transitions
+   - Dynamic chord name display based on active modifiers
+
 ## 🎼 Current State
 
 ### What Works:
+**Build Mode:**
 - ✅ Add chords from palette (sequential positioning)
 - ✅ Drag chords to move them anywhere on timeline
 - ✅ Shift+Drag to reorder chord sequence
@@ -53,8 +64,20 @@
 - ✅ Visual ruler with measures and beats
 - ✅ Grid snapping (all positions snap to 8th notes)
 - ✅ Click chords to preview sound
-- ✅ Piano keyboard works
+
+**Learn Mode:**
+- ✅ Interactive piano keyboard with scale degrees
+- ✅ Chord display showing all diatonic chords
+- ✅ Hover over chord cards to see modifier buttons
+- ✅ Click modifiers to add extensions (7, maj7, 9, 11, 13)
+- ✅ Add alterations (sus2, sus4, add9)
+- ✅ Click chord cards to hear the sound
+- ✅ Dynamic chord name updates
+- ✅ Visual distinction between chord types
+
+**Global:**
 - ✅ Key/scale selection works
+- ✅ Mode toggle (Learn ↔ Build)
 
 ### Data Flow:
 ```
@@ -74,24 +97,32 @@ useGrid converts 8th notes → pixels for display
 ```
 
 ### Key Files:
+**Core:**
 - **Data Model**: `src/types/music.ts` - All TypeScript interfaces
 - **State**: `src/contexts/MusicContext.tsx` - Song state + actions
+- **Music Theory**: `src/utils/musicTheory.ts` - Scale/chord generation, frequency calculations
+
+**Hooks:**
 - **Grid Logic**: `src/hooks/useGrid.ts` - Time/pixel conversions
 - **Playback**: `src/hooks/usePlayback.ts` - Web Audio scheduling engine
 - **Audio**: `src/hooks/useAudioEngine.ts` - Soundfont player wrapper
+- **Music Context**: `src/hooks/useMusic.ts` - Context consumer hook
+
+**Build Mode Components:**
 - **Timeline**: `src/components/ChordTimeline.tsx` - Main timeline editor
 - **Chord Blocks**: `src/components/ChordBlock.tsx` - Individual chord with drag/resize
 - **Ruler**: `src/components/Ruler.tsx` - Visual measure/beat display
 - **Palette**: `src/components/ChordPalette.tsx` - Chord selection (vertical stack)
 
-## 🚧 What's NOT Done (4 remaining tasks)
+**Learn Mode Components:**
+- **Learn Mode**: `src/components/LearnMode.tsx` - Main Learn Mode container
+- **Chord Display**: `src/components/ChordDisplay.tsx` - Grid of chord cards
+- **Chord Card**: `src/components/ChordCard.tsx` - Interactive chord with modifiers
+- **Piano**: `src/components/Piano.tsx` - Interactive keyboard
+
+## 🚧 What's NOT Done (3 remaining tasks)
 
 ### MEDIUM Priority:
-5. **Complete Learn Mode** ⏳
-   - Missing: Proper ChordDisplay component
-   - Missing: ChordCard with modifier buttons ([7], [maj7], etc.)
-   - Current: LearnMode exists but minimal
-
 6. **Add Recording** ⏳
    - Missing: useRecorder() hook
    - Missing: Melody track component
@@ -123,13 +154,7 @@ useGrid converts 8th notes → pixels for display
 ## 📋 Next Agent Recommendations
 
 ### Immediate Tasks (if continuing on OVERVIEW_PLAN.md):
-1. **Task 5**: Complete Learn Mode
-   - Build ChordDisplay grid component
-   - Add ChordCard with hover-to-show modifiers
-   - Implement chord extensions ([7], [maj7], [9], etc.)
-   - Wire up audio preview
-
-2. **Task 6**: Add Recording
+1. **Task 6**: Add Recording
    - Create useRecorder() hook
    - Implement melody track
    - Add quantization options
@@ -151,17 +176,33 @@ useGrid converts 8th notes → pixels for display
 ## 🎨 UI/UX Notes
 
 ### Interaction Model:
+
+**Build Mode:**
 - **Default drag**: Move chord to new position
 - **Shift + drag**: Reorder chord in sequence
 - **Right edge drag**: Resize chord duration
 - **Click**: Preview chord sound
 - **Delete button**: Remove chord (appears on hover)
 
+**Learn Mode:**
+- **Hover chord card**: Shows modifier buttons
+- **Click modifier**: Toggles extension/alteration
+- **Click card**: Plays modified chord
+- **Multiple modifiers**: Can stack extensions
+
 ### Visual Feedback:
+
+**Build Mode:**
 - **Dragging**: 80% opacity, elevated shadow
 - **Resizing**: 80% opacity
 - **Playing**: Pink gradient, pulse animation
 - **Hover**: Elevated shadow, visible controls
+
+**Learn Mode:**
+- **Chord cards**: Purple gradient (diatonic), pink gradient (borrowed)
+- **Hover**: Card lifts up, modifier panel appears
+- **Active modifiers**: White background with colored text
+- **Smooth transitions**: All state changes animated
 
 ## 🔧 Development Commands
 

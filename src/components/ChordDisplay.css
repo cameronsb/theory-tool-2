@@ -1,0 +1,32 @@
+.chord-display {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.chord-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.chord-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .chord-grid {
+    gap: 6px;
+  }
+}
+

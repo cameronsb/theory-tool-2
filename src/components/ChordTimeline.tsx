@@ -1,6 +1,5 @@
 import { useRef, useMemo, useState, useCallback } from 'react';
 import { useMusic } from '../hooks/useMusic';
-import { useAudioEngine } from '../hooks/useAudioEngine';
 import { usePlayback } from '../hooks/usePlayback';
 import { useGrid } from '../hooks/useGrid';
 import { getChordFrequencies } from '../utils/musicTheory';
@@ -10,8 +9,7 @@ import type { ChordBlock as ChordBlockType } from '../types/music';
 import './ChordTimeline.css';
 
 export function ChordTimeline() {
-  const { state, actions } = useMusic();
-  const { playChord, audioContext, instrument } = useAudioEngine();
+  const { state, actions, audio } = useMusic();
   const grid = useGrid();
   const timelineRef = useRef<HTMLDivElement>(null);
   const [playheadPosition, setPlayheadPosition] = useState(0);
@@ -48,8 +46,8 @@ export function ChordTimeline() {
     tempo: state.song.tempo,
     chordBlocks,
     loop: state.playbackState.loop,
-    audioContext,
-    instrument,
+    audioContext: audio.audioContext,
+    instrument: audio.instrument,
     onTimeUpdate: handleTimeUpdate,
     onPlaybackEnd: handlePlaybackEnd,
   });
@@ -83,9 +81,9 @@ export function ChordTimeline() {
     actions.removeChordBlock(id);
   };
 
-  const handleChordPlay = (block: ChordBlockType) => {
+  const handleChordPlay = async (block: ChordBlockType) => {
     const frequencies = getChordFrequencies(block.rootNote, block.intervals, 4);
-    playChord(frequencies);
+    await audio.playChord(frequencies);
   };
 
   const handleClearProgression = () => {
