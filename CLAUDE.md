@@ -8,16 +8,26 @@
 
 1. **Verify the current state works:**
    ```bash
-   npm run typecheck  # MUST pass
-   npm run dev        # MUST start without errors
+   npm run test       # Runs BOTH TypeScript AND client-side checks
+   npm run dev        # Start the dev server (keep it running)
    ```
 
-2. **Open the browser and manually test:**
+2. **NEW: Check for client-side errors automatically:**
+   ```bash
+   npm run check:client  # Detects JavaScript errors in the browser
+   ```
+   This will catch:
+   - Module loading failures
+   - Missing exports/imports
+   - Syntax errors in the browser
+   - Server connection issues
+
+3. **Open the browser and manually test:**
    - Can you click piano keys?
    - Does audio play?
    - Do the modes (Learn/Build) switch properly?
 
-3. **If anything is broken, STOP and fix it first**
+4. **If anything is broken, STOP and fix it first**
 
 ## Working Protocol
 
@@ -25,15 +35,17 @@
 
 1. **Before editing:** Read the file completely first
 2. **After each edit:** Run `npm run typecheck`
-3. **After related edits:** Test in the browser (`npm run dev`)
-4. **Before moving on:** Verify you didn't break existing functionality
+3. **After import/export changes:** Run `npm run check:client`
+4. **After related edits:** Test in the browser (`npm run dev`)
+5. **Before moving on:** Verify you didn't break existing functionality
 
 ### The Testing Mantra
 
 Repeat this constantly:
-- Edit → TypeCheck → Browser Test → Repeat
+- Edit → TypeCheck → Client Check → Browser Test → Repeat
 - **Never make more than 2-3 changes without testing**
 - **If TypeScript complains, STOP and fix it immediately**
+- **If client check fails, you likely have import/export issues**
 
 ## Common Breaking Points to Watch
 
@@ -65,8 +77,12 @@ Repeat this constantly:
 Run through this checklist frequently:
 
 ```bash
-# 1. Type checking passes
-npm run typecheck
+# 1. AUTOMATED: Full check (TypeScript + Client)
+npm run test
+
+# Or run individually:
+npm run typecheck      # Check TypeScript types
+npm run check:client   # Check for client-side errors
 
 # 2. Dev server starts
 npm run dev
@@ -76,11 +92,18 @@ npm run dev
 - [ ] Clicking keys plays sound
 - [ ] Learn mode works (scales, progression detection)
 - [ ] Build mode works (recording, playback)
-- [ ] No console errors
+- [ ] No console errors (Press F12 to check)
 - [ ] Mode switching works smoothly
 
 # 4. Production build works
 npm run build
+```
+
+### Quick Test After Changes
+
+For fastest feedback after code changes:
+```bash
+npm run test  # This catches most errors without opening a browser!
 ```
 
 ## Working with the Audio System

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { PianoKeyData } from '../utils/pianoUtils';
-import { getScaleDegree, getScaleDegreeNumeral } from '../utils/musicTheory';
+import { getScaleDegreeNumeral } from '../utils/musicTheory';
 import type { Note } from '../types/music';
 import './PianoKey.css';
 
