@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Note, ChordType } from '../types/music';
-import { getFullChordName, getChordFrequencies } from '../utils/musicTheory';
+import { getFullChordName, getChordFrequencies, NOTES } from '../utils/musicTheory';
 import { useMusic } from '../hooks/useMusic';
 import './ChordCard.css';
 
@@ -54,10 +54,16 @@ export function ChordCard({
 }: ChordCardProps) {
   const [activeModifiers, setActiveModifiers] = useState<Set<string>>(new Set());
   const [currentIntervals, setCurrentIntervals] = useState<number[]>(intervals);
-  const { audio } = useMusic();
+  const { audio, actions, state } = useMusic();
 
   // Backwards compatibility: if compact prop is used, override variationMode
   const effectiveMode = compact ? 'select' : variationMode;
+
+  // Check if this chord is currently selected on the keyboard
+  const isChordSelected = state.selectedChords.length > 0 &&
+    state.selectedChords[0].rootNote === rootNote &&
+    state.selectedChords[0].numeral === numeral &&
+    JSON.stringify(state.selectedChords[0].intervals) === JSON.stringify(currentIntervals);
 
   const applyModifier = (modifier: ChordModifier) => {
     const newModifiers = new Set(activeModifiers);
@@ -106,6 +112,11 @@ export function ChordCard({
     } catch (error) {
       console.error('Error playing chord:', error);
     }
+
+    // If keyboard preview is enabled, update the keyboard selection
+    if (state.keyboardPreviewEnabled) {
+      actions.selectChord(rootNote, newIntervals, numeral);
+    }
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -124,6 +135,11 @@ export function ChordCard({
         }
       } catch (error) {
         console.error('Error playing chord:', error);
+      }
+
+      // If keyboard preview is enabled, update the keyboard selection
+      if (state.keyboardPreviewEnabled) {
+        actions.selectChord(rootNote, intervals, numeral);
       }
       return;
     }
@@ -165,14 +181,24 @@ export function ChordCard({
     } catch (error) {
       console.error('Error playing chord:', error);
     }
+
+    // If keyboard preview is enabled, update the keyboard selection
+    if (state.keyboardPreviewEnabled) {
+      actions.selectChord(rootNote, newIntervals, numeral);
+    }
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // Ignore clicks on modifier buttons
-    if ((e.target as HTMLElement).classList.contains('modifier-btn')) {
+    // Ignore clicks on modifier buttons and select dropdowns
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('modifier-btn') ||
+        target.tagName === 'SELECT' ||
+        target.closest('.modifier-buttons-grid') ||
+        target.closest('.variations-select')) {
       return;
     }
 
+    // Play the chord sound
     try {
       const frequencies = getChordFrequencies(rootNote, currentIntervals);
       if (frequencies && frequencies.length > 0) {
@@ -180,6 +206,22 @@ export function ChordCard({
       }
     } catch (error) {
       console.error('Error playing chord:', error);
+    }
+
+    // If keyboard preview is enabled, also select the chord to show on keyboard
+    if (state.keyboardPreviewEnabled) {
+      const isSelected = state.selectedChords.length > 0 &&
+        state.selectedChords[0].rootNote === rootNote &&
+        state.selectedChords[0].numeral === numeral &&
+        JSON.stringify(state.selectedChords[0].intervals) === JSON.stringify(currentIntervals);
+
+      if (isSelected) {
+        // Deselect if already selected
+        actions.deselectChords();
+      } else {
+        // Select this chord
+        actions.selectChord(rootNote, currentIntervals, numeral);
+      }
     }
   };
 
@@ -270,11 +312,177 @@ export function ChordCard({
     ? CHORD_MODIFIERS
     : CHORD_MODIFIERS.filter(m => m.label !== '7' && m.label !== 'maj7');
 
+  // Helper: Get interval label for display (1, 3, 5, ♭7, 9, etc.)
+  const getIntervalLabel = (interval: number): string => {
+    const labels: Record<number, string> = {
+      0: '1',
+      1: '♭2',
+      2: '2',
+      3: '♭3',
+      4: '3',
+      5: '4',
+      6: '♭5',
+      7: '5',
+      8: '♯5',
+      9: '6',
+      10: '♭7',
+      11: '7',
+      14: '9',
+      17: '11',
+      21: '13',
+    };
+    return labels[interval] || String(interval);
+  };
+
+  // Piano key visualization component
+  const PianoVisualization = () => {
+    const whiteKeyPositions = [0, 2, 4, 5, 7, 9, 11]; // C, D, E, F, G, A, B
+    const blackKeyPositions = [
+      { key: 1, x: 8 },    // C#
+      { key: 3, x: 18 },   // D#
+      { key: 6, x: 38 },   // F#
+      { key: 8, x: 48 },   // G#
+      { key: 10, x: 58 }   // A#
+    ];
+
+    // Get the chromatic position of the root note (0-11 where C=0)
+    const rootIndex = NOTES.indexOf(rootNote);
+
+    // Calculate which chromatic keys should be highlighted
+    // Map chord intervals to actual chromatic positions based on root note
+    const activeKeys = new Map<number, number>(); // chromatic position -> interval
+    currentIntervals.forEach(interval => {
+      const chromaticPosition = (rootIndex + interval) % 12;
+      activeKeys.set(chromaticPosition, interval);
+    });
+
+    // TODO: Handle overlapping labels for adjacent chromatic notes
+    // When chords have adjacent semitones (e.g., ♭3 and 9 in a minor add9),
+    // the interval labels can overlap and become hard to read.
+    // Potential solutions:
+    // 1. Detect adjacent active notes and offset labels horizontally (dx attribute)
+    // 2. Add text-stroke or text-shadow for better contrast
+    // 3. Use abbreviated labels for crowded situations (e.g., "♭3" → "3")
+    // 4. Adjust font size dynamically based on number of active notes
+    // Example case: Dm(add9) has ♭3 at D# and 9 at E (adjacent keys)
+
+    const isNoteActive = (chromaticKey: number) => activeKeys.has(chromaticKey);
+    const getNoteLabel = (chromaticKey: number) => {
+      const interval = activeKeys.get(chromaticKey);
+      if (interval === undefined) return null;
+      return getIntervalLabel(interval);
+    };
+
+    // Check if this chord is currently selected
+    const isSelected = state.selectedChords.length > 0 &&
+      state.selectedChords[0].rootNote === rootNote &&
+      state.selectedChords[0].numeral === numeral &&
+      JSON.stringify(state.selectedChords[0].intervals) === JSON.stringify(currentIntervals);
+
+    const handlePianoClick = (e: React.MouseEvent) => {
+      // Stop propagation to prevent card click handler from firing
+      e.stopPropagation();
+
+      // Play the chord sound
+      try {
+        const frequencies = getChordFrequencies(rootNote, currentIntervals);
+        if (frequencies && frequencies.length > 0) {
+          audio.playChord(frequencies, 0.8);
+        }
+      } catch (error) {
+        console.error('Error playing chord:', error);
+      }
+
+      // Only toggle selection if keyboard preview is enabled
+      if (!state.keyboardPreviewEnabled) {
+        return;
+      }
+
+      // Toggle selection on keyboard
+      if (isSelected) {
+        // Toggle off - deselect the chord
+        actions.deselectChords();
+      } else {
+        // Select this chord to light up the piano keys
+        actions.selectChord(rootNote, currentIntervals, numeral);
+      }
+    };
+
+    return (
+      <svg
+        viewBox="-1 -1 72 38"
+        className={`piano-visualization ${isSelected ? 'selected' : ''}`}
+        onClick={handlePianoClick}
+      >
+        {/* White Keys */}
+        {whiteKeyPositions.map((keyNum, idx) => {
+          const active = isNoteActive(keyNum);
+          const label = getNoteLabel(keyNum);
+          const x = idx * 10;
+
+          return (
+            <g key={keyNum}>
+              <rect
+                x={x}
+                y="0"
+                width="10"
+                height="24"
+                className={`white-key ${active ? "active" : ""}`}
+              />
+              {label && (
+                <text
+                  x={x + 5}
+                  y="34"
+                  fill="white"
+                  fontSize="10"
+                  fontWeight="600"
+                  textAnchor="middle"
+                >
+                  {label}
+                </text>
+              )}
+            </g>
+          );
+        })}
+
+        {/* Black Keys */}
+        {blackKeyPositions.map(({ key, x }) => {
+          const active = isNoteActive(key);
+          const label = getNoteLabel(key);
+
+          return (
+            <g key={key}>
+              <rect
+                x={x}
+                y="0"
+                width="4"
+                height="14"
+                className={`black-key ${active ? "active" : ""}`}
+              />
+              {label && (
+                <text
+                  x={x + 2}
+                  y="34"
+                  fill="white"
+                  fontSize="10"
+                  fontWeight="600"
+                  textAnchor="middle"
+                >
+                  {label}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
+
   // Select dropdown mode
   if (effectiveMode === 'select') {
     return (
       <div
-        className={`chord-card chord-card-select ${isDiatonic ? 'diatonic' : 'borrowed'}`}
+        className={`chord-card chord-card-select ${isDiatonic ? 'diatonic' : 'borrowed'} ${isChordSelected ? 'chord-selected' : ''}`}
         onClick={handleCardClick}
       >
         <div className="chord-card-main">
@@ -282,6 +490,7 @@ export function ChordCard({
             <div className="chord-numeral">{numeral}</div>
             <div className="chord-name">{getChordDisplayName()}</div>
           </div>
+          <PianoVisualization />
           <select
             className="variations-select"
             value={Array.from(activeModifiers)[0] || ''}
@@ -303,7 +512,7 @@ export function ChordCard({
   // Button mode (default)
   return (
     <div
-      className={`chord-card chord-card-buttons ${isDiatonic ? 'diatonic' : 'borrowed'}`}
+      className={`chord-card chord-card-buttons ${isDiatonic ? 'diatonic' : 'borrowed'} ${isChordSelected ? 'chord-selected' : ''}`}
       onClick={handleCardClick}
     >
       <div className="chord-card-main">
@@ -311,6 +520,7 @@ export function ChordCard({
           <div className="chord-numeral">{numeral}</div>
           <div className="chord-name">{getChordDisplayName()}</div>
         </div>
+        <PianoVisualization />
         <div className="modifier-buttons-grid" onClick={(e) => e.stopPropagation()}>
           {availableModifiers.map(modifier => (
             <button

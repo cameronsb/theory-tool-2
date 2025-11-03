@@ -4,7 +4,7 @@ import { getScaleDegreeNumeral } from '../utils/musicTheory';
 import type { Note } from '../types/music';
 import './PianoKey.css';
 
- 
+
 interface PianoKeyProps {
   keyData: PianoKeyData;
   onPress: (frequency: number) => void;
@@ -14,7 +14,7 @@ interface PianoKeyProps {
   selectedKey: Note;
   mode: 'major' | 'minor';
 }
- 
+
 
 export function PianoKey({
   keyData,

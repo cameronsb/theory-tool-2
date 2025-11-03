@@ -38,6 +38,7 @@ interface MusicState {
     chordDisplayMode: ChordDisplayMode;
     chordProgression: ChordInProgression[];
     scaleViewEnabled: boolean;
+    keyboardPreviewEnabled: boolean;
     pianoRange: {
         startMidi: number;
         endMidi: number;
@@ -62,6 +63,7 @@ type MusicAction =
     | { type: "CLEAR_PROGRESSION" }
     | { type: "UPDATE_CHORD_DURATION"; payload: { id: string; duration: number } }
     | { type: "TOGGLE_SCALE_VIEW" }
+    | { type: "TOGGLE_KEYBOARD_PREVIEW" }
     | { type: "SET_PIANO_RANGE"; payload: { startMidi: number; endMidi: number } }
     | { type: "SET_PLAYBACK_PLAYING"; payload: boolean }
     | { type: "SET_PLAYBACK_BEAT"; payload: number }
@@ -84,6 +86,7 @@ const initialState: MusicState = {
     chordDisplayMode: "select",
     chordProgression: [],
     scaleViewEnabled: false,
+    keyboardPreviewEnabled: true, // Default to enabled for better UX
     pianoRange: {
         startMidi: 60, // C4
         endMidi: 83,   // B5 (2 octaves)
@@ -108,7 +111,8 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
                     ...state.song,
                     key: action.payload,
                     metadata: { ...state.song.metadata, updatedAt: now }
-                }
+                },
+                selectedChords: [], // Clear chord selections when key changes
             };
 
         case "SET_MODE":
@@ -118,7 +122,8 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
                     ...state.song,
                     mode: action.payload,
                     metadata: { ...state.song.metadata, updatedAt: now }
-                }
+                },
+                selectedChords: [], // Clear chord selections when mode changes
             };
 
         case "SELECT_CHORD":
@@ -153,6 +158,14 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
 
         case "TOGGLE_SCALE_VIEW":
             return { ...state, scaleViewEnabled: !state.scaleViewEnabled };
+
+        case "TOGGLE_KEYBOARD_PREVIEW":
+            return {
+                ...state,
+                keyboardPreviewEnabled: !state.keyboardPreviewEnabled,
+                // Clear selected chords when toggling off
+                selectedChords: state.keyboardPreviewEnabled ? [] : state.selectedChords,
+            };
 
         case "SET_PIANO_RANGE":
             return {
@@ -372,7 +385,7 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
 }
 
 // Context interface with state and actions
- 
+
 interface MusicContextType {
     state: MusicState;
     settings: UserSettings;
@@ -396,6 +409,7 @@ interface MusicContextType {
         clearProgression: () => void;
         updateChordDuration: (id: string, duration: number) => void;
         toggleScaleView: () => void;
+        toggleKeyboardPreview: () => void;
         setPianoRange: (startMidi: number, endMidi: number) => void;
         setPlaybackPlaying: (playing: boolean) => void;
         setPlaybackBeat: (beat: number) => void;
@@ -415,7 +429,7 @@ interface MusicContextType {
         setDrumSoundVolume: (sound: keyof UserSettings['volume']['drumSounds'], volume: number) => void;
     };
 }
- 
+
 
 // Create context
 // eslint-disable-next-line react-refresh/only-export-components
@@ -536,6 +550,10 @@ export function MusicProvider({ children }: MusicProviderProps) {
         dispatch({ type: "TOGGLE_SCALE_VIEW" });
     }, []);
 
+    const toggleKeyboardPreview = useCallback(() => {
+        dispatch({ type: "TOGGLE_KEYBOARD_PREVIEW" });
+    }, []);
+
     const setPianoRange = useCallback((startMidi: number, endMidi: number) => {
         dispatch({ type: "SET_PIANO_RANGE", payload: { startMidi, endMidi } });
     }, []);
@@ -615,6 +633,7 @@ export function MusicProvider({ children }: MusicProviderProps) {
             clearProgression,
             updateChordDuration,
             toggleScaleView,
+            toggleKeyboardPreview,
             setPianoRange,
             setPlaybackPlaying,
             setPlaybackBeat,

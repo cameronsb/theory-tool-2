@@ -1,5 +1,9 @@
 .chord-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Cool purple gradient */
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+
+  /* Muted gray background */
+  background: rgba(150, 150, 150, 0.5);
   border-radius: 6px;
   padding: 10px 12px;
   cursor: pointer;
@@ -40,12 +44,11 @@
 }
 
 .chord-card.borrowed {
-  background: linear-gradient(135deg, #c44dc7 0%, #d63a51 100%);
-}
+    /* Cool pink gradient */
+  /* background: linear-gradient(135deg, #c44dc7 0%, #d63a51 100%); */
 
-.chord-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transform: translateY(-1px);
+  /* Muted gray background */
+  background: rgba(100, 100, 100, 0.5);
 }
 
 .chord-card-main {
@@ -89,7 +92,6 @@
   grid-template-columns: repeat(6, 50px); /* 6 buttons per row, 50px each */
   grid-template-rows: repeat(2, 40px); /* 2 rows, 40px tall */
   gap: 6px 6px;
-  margin-left: auto; /* Right-justify the grid */
   pointer-events: none;
   position: relative;
   z-index: 1;
@@ -116,7 +118,7 @@
   color: white;
   padding: 2px 6px;
   border-radius: 3px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
@@ -139,12 +141,22 @@
 
 .modifier-btn.active {
   background: rgba(255, 255, 255, 0.95);
-  color: #667eea;
+  color: black;
   /* Removed border-color change to prevent any layout shift */
 }
 
-.chord-card.borrowed .modifier-btn.active {
-  color: #d63a51;
+/* Golden highlighting when chord is selected on keyboard */
+.chord-card.chord-selected .modifier-btn.active {
+  background: rgba(255, 193, 7, 1);
+  color: #1a1a2e;
+  border-color: rgba(255, 193, 7, 1);
+  font-weight: 700;
+}
+
+.chord-card.borrowed.chord-selected .modifier-btn.active {
+  background: rgba(255, 193, 7, 0.95);
+  color: #1a1a2e;
+  border-color: rgba(255, 193, 7, 0.6);
 }
 
 .chord-card.borrowed .chord-numeral,
@@ -245,5 +257,58 @@
 .variations-select option {
   background: #1a1a2e;
   color: white;
+}
+
+/* Piano visualization */
+.piano-visualization {
+  width: 100%;
+  max-width: 120px;
+  max-height: 64px;
+  flex-shrink: 0;
+  padding: 4px;
+  border-radius: 4px;
+  background: transparent;
+  transition: opacity 0.2s ease, background-color 0.2s ease, filter 0.2s ease;
+  color: white;
+  text-select: none;
+  user-select: none;
+}
+
+.piano-visualization .black-key {
+    stroke: black;
+    fill: black;
+    fill-opacity: .9;
+    stroke-opacity: 0.3;
+}
+
+.piano-visualization .black-key.active {
+    stroke: black;
+    /* fill: blue; */
+    fill: orange;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
+    /* stroke-opacity: 1; */
+}
+.piano-visualization .white-key {
+    stroke: black;
+    fill: white;
+    fill-opacity: .3;
+    stroke-opacity: .4;
+}
+
+.piano-visualization .white-key.active {
+    stroke: black;
+    stroke-width: 0.8;
+    fill: orange;
+    fill-opacity: 1;
+    /* stroke-opacity: 1; */
+}
+
+.piano-visualization:active {
+  /* background: rgba(255, 255, 255, 0.15); */
+}
+
+.piano-visualization.selected {
+  opacity: 1;
+  /* background: orange; */
 }
 

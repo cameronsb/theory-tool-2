@@ -4,9 +4,9 @@
   align-items: center;
   gap: 2rem;
   padding: 1rem 2rem;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .mode-toggle {
@@ -16,40 +16,42 @@
 
 .mode-toggle button {
   padding: 0.5rem 1.5rem;
-  border: 1px solid #ddd;
-  background: white;
-  color: #666;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 .mode-toggle button:hover {
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .mode-toggle button.active {
-  background: #333;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-color: #333;
+  border-color: #667eea;
 }
 
 .menu-toggle {
   display: none;
   margin-left: auto;
   padding: 0.5rem;
-  border: 1px solid #ddd;
-  background: white;
-  color: #666;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .menu-toggle:hover {
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
 }
 
 .menu-overlay {
@@ -70,25 +72,39 @@
 
 .control-group label {
   font-size: 11px;
-  color: #999;
+  color: rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .control-group select {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ddd;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   min-width: 100px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.control-group select option {
+  background: #1a1a2e;
+  color: white;
+}
+
+.control-group select:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .control-group select:focus {
-  outline: none;
-  border-color: #333;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(102, 126, 234, 0.5);
 }
 
 /* Mobile responsive */
@@ -109,8 +125,8 @@
     height: 100vh;
     margin: 0;
     padding: 2rem 1.5rem;
-    background: white;
-    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    box-shadow: -2px 0 16px rgba(0, 0, 0, 0.5);
     flex-direction: column;
     gap: 1.5rem;
     transition: right 0.3s ease;

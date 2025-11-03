@@ -11,6 +11,7 @@
   justify-content: flex-end;
   align-items: center;
   padding-bottom: 0.5rem;
+  border-color: black;
 }
 
 /* White keys */
@@ -18,7 +19,7 @@
   width: var(--white-key-width);
   height: var(--white-key-height);
   background: white;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.4);
   border-top: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1;
@@ -57,23 +58,38 @@
 
 /* Scale highlighting */
 .piano-key.white.in-scale {
-  background: #f0f7ff;
-  border-color: #b3d9ff;
+  background: #baddff;
+  /* border-color: #b3d9ff; */
 }
 
 .piano-key.white.in-scale:hover {
-  background: #e5f2ff;
+  /* background: #60a3eb; */
+  background: #b5d8fe;
+}
+
+.piano-key.white.in-scale.pressed {
+  background: #97cfff;
 }
 
 .piano-key.black.in-scale {
-  background: linear-gradient(180deg, #1376d9 0%, #4a6a8a 100%);
-  border-color: #3a5a7a;
+  /* Cool blue gradient */
+  /* background: linear-gradient(180deg, #1376d9 0%, #4a6a8a 100%); */
+  background: #1376d9;
+  /* border-color: #3a5a7a; */
+}
+
+.piano-key.black.in-scale:hover {
+  background: #1266c2;
+}
+
+.piano-key.black.in-scale.pressed {
+  background: #0d56a9;
 }
 
 /* Chord highlighting */
 .piano-key.white.in-chord {
   background: #fff4e5;
-  border-color: #ffcc80;
+  /* border-color: #ffcc80; */
 }
 
 .piano-key.white.in-chord:hover {
@@ -81,7 +97,8 @@
 }
 
 .piano-key.black.in-chord {
-  background: linear-gradient(180deg, #5a4a3a 0%, #4a3a2a 100%);
+  background: orange;
+  /* background: linear-gradient(180deg, #d4a574 0%, #b8935a 100%); */
 }
 
 /* Key labels */
@@ -90,38 +107,43 @@
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
-  font-size: 12px;
   pointer-events: none;
 }
 
 .note-name {
-  color: #666;
+  /* color: #666; */
+  color: black;
   font-weight: 500;
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .piano-key.in-scale .note-name {
-  color: #1976d2;
+  /* color: #1976d2; */
+  color: black;
   font-weight: 600;
 }
 
 .piano-key.in-chord .note-name {
-  color: #f57c00;
+  /* color: #667eea; */
+  color: black;
   font-weight: 600;
 }
 
 .scale-degree {
-  color: #999;
-  font-size: 10px;
+  /* color: #999; */
+  color: black;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .piano-key.in-scale .scale-degree {
-  color: #1976d2;
+  /* color: #1976d2; */
+  color: black;
 }
 
 .piano-key.in-chord .scale-degree {
-  color: #f57c00;
+  /* color: #667eea; */
+  color: black;
 }
 
 /* Responsive font sizes */
