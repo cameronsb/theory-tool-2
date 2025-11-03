@@ -197,9 +197,33 @@ None
 
 ## 📝 NEXT STEPS
 
-1. Create `/src/config/` directory
-2. Create placeholder files: `ui.ts`, `chords.ts`, `audio.ts`, `music.ts`, `index.ts`
-3. Start extracting UI configuration (colors, spacing, breakpoints)
+### For Next Session
+
+**Option A: Start Design Refactor (Recommended)**
+1. Edit `config/ui.ts` to change colors, spacing, shadows
+2. Edit `ui/ResizeHandle.css` for resize handle styling
+3. Edit `ui/TabGroup.css` for tab styling
+4. Experiment with design changes - everything is centralized!
+
+**Option B: Integrate New UI Components**
+1. Update BuildMode to use `<ResizeHandle>` component
+2. Update LearnMode to use `<ResizeHandle>` component
+3. Update ConfigBar to use `<TabGroup>` component
+4. Update BuildMode to use `<TabGroup>` component
+5. Remove old duplicated CSS
+
+**Option C: Continue Refactoring**
+1. Extract chord grouping/sorting logic to utilities
+2. Split ChordTimeline component
+3. Add more unit tests
+
+### Current State
+- ✅ All configuration centralized and documented
+- ✅ Type system robust with branded types
+- ✅ Business logic extracted into hooks
+- ✅ Reusable UI components created
+- ✅ Everything tested and building successfully
+- 🎨 **Ready for design refactor!**
 
 ---
 
