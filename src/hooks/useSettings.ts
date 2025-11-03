@@ -33,6 +33,10 @@ function mergeWithDefaults(stored: Partial<UserSettings>): UserSettings {
           ...(stored.ui?.builderPanel?.rememberedHeights || {}),
         },
       },
+      piano: {
+        ...DEFAULT_SETTINGS.ui.piano,
+        ...(stored.ui?.piano || {}),
+      },
     },
   };
 }
@@ -148,6 +152,32 @@ export function useSettings() {
     }));
   };
 
+  const setShowInScaleColors = (show: boolean) => {
+    setSettings((prev) => ({
+      ...prev,
+      ui: {
+        ...prev.ui,
+        piano: {
+          ...prev.ui.piano,
+          showInScaleColors: show,
+        },
+      },
+    }));
+  };
+
+  const setKeyboardPreviewEnabled = (enabled: boolean) => {
+    setSettings((prev) => ({
+      ...prev,
+      ui: {
+        ...prev.ui,
+        piano: {
+          ...prev.ui.piano,
+          keyboardPreviewEnabled: enabled,
+        },
+      },
+    }));
+  };
+
   return {
     settings,
     setSettings,
@@ -158,5 +188,7 @@ export function useSettings() {
     setBuilderPanelHeight,
     setBuilderPanelTab,
     setBuilderPanelRememberedHeight,
+    setShowInScaleColors,
+    setKeyboardPreviewEnabled,
   };
 }

@@ -451,9 +451,16 @@ interface MusicProviderProps {
 }
 
 export function MusicProvider({ children }: MusicProviderProps) {
-    const [state, dispatch] = useReducer(musicReducer, initialState);
+    const { settings, setMasterVolume, setTrackVolume, setDrumSoundVolume, setShowInScaleColors, setKeyboardPreviewEnabled } = useSettings();
+
+    // Initialize state with settings from localStorage
+    const [state, dispatch] = useReducer(musicReducer, {
+        ...initialState,
+        showInScaleColors: settings.ui.piano.showInScaleColors,
+        keyboardPreviewEnabled: settings.ui.piano.keyboardPreviewEnabled,
+    });
+
     const { playNote: rawPlayNote, playChord: rawPlayChord, playKick: rawPlayKick, playSnare: rawPlaySnare, playHiHat: rawPlayHiHat, loading, audioContext, instrument } = useAudioEngine();
-    const { settings, setMasterVolume, setTrackVolume, setDrumSoundVolume } = useSettings();
 
     // Wrap play functions to apply volume settings
     const playNote = useCallback((frequency: number, duration = 0.3, volume = 0.8) => {
@@ -561,12 +568,16 @@ export function MusicProvider({ children }: MusicProviderProps) {
     }, []);
 
     const toggleKeyboardPreview = useCallback(() => {
+        const newValue = !state.keyboardPreviewEnabled;
         dispatch({ type: "TOGGLE_KEYBOARD_PREVIEW" });
-    }, []);
+        setKeyboardPreviewEnabled(newValue);
+    }, [state.keyboardPreviewEnabled, setKeyboardPreviewEnabled]);
 
     const toggleInScaleColors = useCallback(() => {
+        const newValue = !state.showInScaleColors;
         dispatch({ type: "TOGGLE_IN_SCALE_COLORS" });
-    }, []);
+        setShowInScaleColors(newValue);
+    }, [state.showInScaleColors, setShowInScaleColors]);
 
     const setPianoRange = useCallback((startMidi: number, endMidi: number) => {
         dispatch({ type: "SET_PIANO_RANGE", payload: { startMidi, endMidi } });

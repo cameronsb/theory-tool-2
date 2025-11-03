@@ -36,6 +36,12 @@ export interface UISettings {
       drums: number;
     };
   };
+
+  // Piano/keyboard display settings
+  piano: {
+    showInScaleColors: boolean;     // Highlight scale notes on piano
+    keyboardPreviewEnabled: boolean; // Show chord notes on keyboard when chord is selected
+  };
 }
 
 // All user settings
@@ -72,6 +78,10 @@ export const DEFAULT_SETTINGS: UserSettings = {
         piano: 250,
         drums: 300,
       },
+    },
+    piano: {
+      showInScaleColors: true,        // Default: highlight scale notes
+      keyboardPreviewEnabled: true,    // Default: show chords on keyboard
     },
   },
 };
