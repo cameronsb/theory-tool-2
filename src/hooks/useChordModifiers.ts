@@ -1,15 +1,15 @@
 /**
  * useChordModifiers Hook
- * 
+ *
  * Manages chord modifier state and application logic.
  * Separates modifier business logic from component rendering.
- * 
+ *
  * @example
  * ```typescript
  * const { activeModifiers, currentIntervals, applyModifier, reset } = useChordModifiers({
  *   initialIntervals: [0, 4, 7], // Major triad intervals
  * });
- * 
+ *
  * // Apply a 7th chord modifier
  * applyModifier('7');
  * // currentIntervals is now [0, 4, 7, 10]
@@ -25,7 +25,7 @@ import { CHORD_MODIFIERS } from '../config';
 interface UseChordModifiersOptions {
   /** Base chord intervals (before any modifiers) */
   initialIntervals: number[];
-  
+
   /** Callback when modifiers change */
   onChange?: (intervals: number[], modifiers: Set<string>) => void;
 }
@@ -36,27 +36,27 @@ interface UseChordModifiersOptions {
 interface UseChordModifiersReturn {
   /** Set of currently active modifier labels */
   activeModifiers: Set<string>;
-  
+
   /** Current chord intervals after all modifiers applied */
   currentIntervals: number[];
-  
+
   /** Apply or remove a chord modifier */
   applyModifier: (modifierLabel: string) => void;
-  
+
   /** Reset to base chord (clear all modifiers) */
   reset: () => void;
-  
+
   /** Check if a modifier is currently active */
   isModifierActive: (modifierLabel: string) => boolean;
 }
 
 /**
  * Custom hook for managing chord modifiers
- * 
+ *
  * Handles the logic of applying and removing chord modifiers,
  * maintaining the set of active modifiers and calculating
  * the resulting chord intervals.
- * 
+ *
  * @param options - Hook configuration
  * @returns Modifier state and control functions
  */
@@ -64,7 +64,7 @@ export function useChordModifiers(
   options: UseChordModifiersOptions
 ): UseChordModifiersReturn {
   const { initialIntervals, onChange } = options;
-  
+
   const [activeModifiers, setActiveModifiers] = useState<Set<string>>(new Set());
   const [currentIntervals, setCurrentIntervals] = useState<number[]>(initialIntervals);
 

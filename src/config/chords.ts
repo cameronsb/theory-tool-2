@@ -1,11 +1,11 @@
 /**
  * Chord Configuration
- * 
+ *
  * Centralized configuration for all chord-related constants including:
  * - Chord modifiers (7th, 9th, sus, dim, aug, etc.)
  * - Diatonic chord groupings by harmonic function
  * - Borrowed chord groupings by emotional quality
- * 
+ *
  * This file enables easy customization of chord theory and harmonic groupings.
  */
 

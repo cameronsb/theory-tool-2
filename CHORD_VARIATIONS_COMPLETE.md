@@ -94,3 +94,4 @@ Play these on a C major card to verify:
 
 🎵 **The app now provides professional-grade chord variations!**
 
+

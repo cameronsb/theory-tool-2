@@ -1,6 +1,6 @@
 /**
  * Chord Type Definitions
- * 
+ *
  * Comprehensive type definitions for chord-related functionality including:
  * - Chord modifiers and transformations
  * - Chord groupings and categories
@@ -14,16 +14,16 @@
 export interface ChordModifier {
   /** Display label (e.g., '7', 'maj7', 'sus4') */
   label: string;
-  
+
   /** Add a single interval (in semitones from root) */
   intervalToAdd?: number;
-  
+
   /** Add multiple intervals (for extended chords like 9th, 11th, 13th) */
   intervalsToAdd?: number[];
-  
+
   /** Remove a specific interval from the chord */
   intervalToRemove?: number;
-  
+
   /** Replace the entire chord structure (for sus, dim, aug) */
   replaceWith?: number[];
 }
@@ -35,7 +35,7 @@ export interface ChordModifier {
 export interface ChordGroup {
   /** Display label for the group (e.g., 'Tonic (Stable, Home)') */
   label: string;
-  
+
   /** Roman numerals of chords in this group (e.g., ['I', 'vi']) */
   numerals: string[];
 }
@@ -83,7 +83,7 @@ export type ChordSortMode = 'default' | 'grouped';
  * Chord quality types
  * Basic chord types before modifiers are applied
  */
-export type ChordQuality = 
+export type ChordQuality =
   | 'major'
   | 'minor'
   | 'diminished'
@@ -121,10 +121,10 @@ export type ExtendedChordQuality =
 export interface ChordModifierState {
   /** Base chord intervals before modifiers */
   baseIntervals: number[];
-  
+
   /** Current intervals after modifiers applied */
   currentIntervals: number[];
-  
+
   /** Set of active modifier labels */
   activeModifiers: Set<string>;
 }
@@ -136,13 +136,13 @@ export interface ChordModifierState {
 export interface ChordCardLayout {
   /** Whether to show the mini piano preview */
   showMiniPreview: boolean;
-  
+
   /** Variation mode for modifiers */
   variationMode: ChordVariationMode;
-  
+
   /** Whether the card is compact */
   compact: boolean;
-  
+
   /** Whether this is a diatonic or borrowed chord */
   isDiatonic: boolean;
 }
@@ -154,19 +154,19 @@ export interface ChordCardLayout {
 export interface ChordProgressionStep {
   /** Unique identifier */
   id: string;
-  
+
   /** Roman numeral (e.g., 'I', 'IV', 'V') */
   numeral: string;
-  
+
   /** Root note */
   rootNote: string;
-  
+
   /** Chord intervals (in semitones from root) */
   intervals: number[];
-  
+
   /** Duration in beats or eighths */
   duration: number;
-  
+
   /** Optional chord quality label */
   quality?: ExtendedChordQuality;
 }
@@ -178,16 +178,16 @@ export interface ChordProgressionStep {
 export interface ChordAnalysis {
   /** Roman numeral in current key */
   numeral: string;
-  
+
   /** Harmonic function (tonic, subdominant, dominant, mediant) */
   function: 'tonic' | 'subdominant' | 'dominant' | 'mediant' | 'borrowed';
-  
+
   /** Whether this is a diatonic chord in the current key */
   isDiatonic: boolean;
-  
+
   /** Chord quality */
   quality: ExtendedChordQuality;
-  
+
   /** Scale degree (1-7) */
   scaleDegree: number;
 }

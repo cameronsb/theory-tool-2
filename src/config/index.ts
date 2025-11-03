@@ -1,9 +1,9 @@
 /**
  * Configuration Index
- * 
+ *
  * Central export point for all application configuration.
  * Import from here instead of individual config files for convenience.
- * 
+ *
  * @example
  * ```typescript
  * import { COLORS, CHORD_MODIFIERS, DRUM_SOUNDS, NOTES } from '../config';

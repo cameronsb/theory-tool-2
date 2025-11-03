@@ -1,16 +1,16 @@
 /**
  * Branded Types for Type Safety
- * 
+ *
  * Branded types (also called "opaque types" or "nominal types") prevent accidental
  * mixing of values that have the same runtime type but different semantic meanings.
- * 
+ *
  * For example, this prevents accidentally using a Volume (0-1) value as a MIDI note (0-127).
- * 
+ *
  * @example
  * ```typescript
  * const vol = createVolume(0.5); // Volume
  * const midi = createMIDINote(60); // MIDINote
- * 
+ *
  * // TypeScript error: Type 'Volume' is not assignable to type 'MIDINote'
  * const wrong: MIDINote = vol;
  * ```
@@ -119,7 +119,7 @@ export type MIDINote = number & { readonly __brand: 'MIDINote' };
 export function createMIDINote(value: number): MIDINote {
   // Round to nearest integer
   const rounded = Math.round(value);
-  
+
   if (rounded < 0 || rounded > 127) {
     throw new Error(`MIDI note must be between 0 and 127, got ${value}`);
   }
