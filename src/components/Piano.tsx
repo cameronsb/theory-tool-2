@@ -1,7 +1,6 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { useMusic } from '../hooks/useMusic';
 import { usePianoLayout } from '../hooks/usePianoLayout';
-import { useGlissando } from '../hooks/useGlissando';
 import { PianoKey } from './PianoKey';
 import { generatePianoKeys, getWhiteKeyCount } from '../utils/pianoUtils';
 import { getScaleNotes, NOTES } from '../utils/musicTheory';
@@ -25,6 +24,9 @@ export function Piano({
 }: PianoProps) {
   const { state, audio } = useMusic();
   const pianoContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Track glissando state (mouse down or touch active)
+  const [isGlissandoActive, setIsGlissandoActive] = useState(false);
 
   // Use flexible layout if enabled
   const layout = usePianoLayout(pianoContainerRef as React.RefObject<HTMLDivElement>, {
@@ -67,18 +69,24 @@ export function Piano({
     await audio.playNote(frequency);
   };
 
-  // Unified glissando support for both mouse and touch
-  const { isActive: isGlissandoActive, handlers: glissandoHandlers } = useGlissando({
-    onTrigger: async (keyNote: string) => {
-      const keyData = keys.find(k => k.note === keyNote);
-      if (keyData) {
-        await audio.playNote(keyData.frequency);
-      }
-    },
-    selector: '.piano-key',
-    getIdentifier: (element) => element.getAttribute('aria-label'),
-    preventDefault: true,
-  });
+  // Global mouse up listener to end glissando
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      setIsGlissandoActive(false);
+    };
+
+    const handleGlobalTouchEnd = () => {
+      setIsGlissandoActive(false);
+    };
+
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    window.addEventListener('touchend', handleGlobalTouchEnd);
+
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+      window.removeEventListener('touchend', handleGlobalTouchEnd);
+    };
+  }, []);
 
   return (
     <div className="piano" ref={pianoContainerRef}>
@@ -91,7 +99,8 @@ export function Piano({
           '--black-key-width': flexible ? `${layout.blackKeyWidth}px` : undefined,
           '--black-key-height': flexible ? `${layout.blackKeyHeight}px` : undefined,
         } as React.CSSProperties}
-        {...glissandoHandlers}
+        onMouseDown={() => setIsGlissandoActive(true)}
+        onTouchStart={() => setIsGlissandoActive(true)}
       >
         {keys.map((keyData) => (
           <PianoKey
@@ -104,6 +113,7 @@ export function Piano({
             selectedKey={state.song.key}
             mode={state.song.mode}
             showScaleLabels={scaleNotes.has(keyData.baseNote)}
+            isGlissandoActive={isGlissandoActive}
           />
         ))}
       </div>

@@ -1,6 +1,6 @@
 # Event Handling Guide - Unified Touch & Mouse Support
 
-**Created:** November 3, 2025  
+**Created:** November 3, 2025
 **Purpose:** Document event handling patterns for consistent cross-device support
 
 ---
@@ -399,7 +399,7 @@ const handleTouchStart = (e: React.TouchEvent) => {
 When implementing new interactions, test on:
 
 - [ ] **Desktop Chrome** - Mouse drag works smoothly
-- [ ] **Desktop Safari** - Mouse drag works smoothly  
+- [ ] **Desktop Safari** - Mouse drag works smoothly
 - [ ] **iPad Safari** - Touch slide works, no zoom/scroll
 - [ ] **iPad Chrome** - Touch slide works, no zoom/scroll
 - [ ] **iPhone Safari** - Touch slide works on small screen

@@ -14,6 +14,7 @@ interface PianoKeyProps {
   selectedKey: Note;
   mode: 'major' | 'minor';
   showScaleLabels?: boolean; // Show labels even without background highlighting
+  isGlissandoActive?: boolean; // Whether glissando mode is active (mouse down or touch)
 }
 
 
@@ -25,7 +26,8 @@ export function PianoKey({
   showScaleDegree,
   selectedKey,
   mode,
-  showScaleLabels = false
+  showScaleLabels = false,
+  isGlissandoActive = false
 }: PianoKeyProps) {
   const [isPressed, setIsPressed] = useState(false);
   const [touchId, setTouchId] = useState<number | null>(null);
@@ -47,6 +49,13 @@ export function PianoKey({
   const handleMouseUp = (e: React.MouseEvent) => {
     e.preventDefault();
     handleRelease();
+  };
+
+  const handleMouseEnter = () => {
+    // Play note when mouse enters while dragging (glissando)
+    if (isGlissandoActive) {
+      handlePress();
+    }
   };
 
   const handleMouseLeave = (e: React.MouseEvent) => {
@@ -102,6 +111,7 @@ export function PianoKey({
       }`}
       style={{ left: leftPosition }}
       onMouseDown={handleMouseDown}
+      onMouseEnter={handleMouseEnter}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleTouchStart}
