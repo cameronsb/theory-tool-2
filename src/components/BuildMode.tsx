@@ -97,7 +97,7 @@ export function BuildMode() {
           </button>
         </div>
         <div className={`bottom-view-content ${bottomView === 'piano' ? 'piano-view' : 'drums-view'}`}>
-          {bottomView === 'piano' && <Piano showScaleDegrees={false} />}
+          {bottomView === 'piano' && <Piano showScaleDegrees={false} adjustHeight />}
           {bottomView === 'drums' && <DrumTrack />}
         </div>
       </div>

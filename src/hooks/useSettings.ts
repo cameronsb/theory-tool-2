@@ -37,6 +37,10 @@ function mergeWithDefaults(stored: Partial<UserSettings>): UserSettings {
         ...DEFAULT_SETTINGS.ui.learnSidebar,
         ...(stored.ui?.learnSidebar || {}),
       },
+      learnTabletPiano: {
+        ...DEFAULT_SETTINGS.ui.learnTabletPiano,
+        ...(stored.ui?.learnTabletPiano || {}),
+      },
       chordSort: {
         ...DEFAULT_SETTINGS.ui.chordSort,
         ...(stored.ui?.chordSort || {}),
@@ -212,6 +216,19 @@ export function useSettings() {
     }));
   };
 
+  const setLearnTabletPianoHeight = (height: number) => {
+    setSettings((prev) => ({
+      ...prev,
+      ui: {
+        ...prev.ui,
+        learnTabletPiano: {
+          ...prev.ui.learnTabletPiano,
+          height: Math.max(200, Math.min(500, height)),
+        },
+      },
+    }));
+  };
+
   const setDiatonicChordSort = (sortMode: 'default' | 'grouped') => {
     setSettings((prev) => ({
       ...prev,
@@ -265,6 +282,7 @@ export function useSettings() {
     setKeyboardPreviewEnabled,
     setLearnSidebarWidth,
     setLearnSidebarOpen,
+    setLearnTabletPianoHeight,
     setDiatonicChordSort,
     setBorrowedChordSort,
     setShowMiniPreview,

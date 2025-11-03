@@ -9,7 +9,7 @@ import { isIPad } from '../utils/deviceDetection';
 import './LearnMode.css';
 
 export function LearnMode() {
-  const { settings, setLearnSidebarWidth, setLearnSidebarOpen } = useSettings();
+  const { settings, setLearnSidebarWidth, setLearnSidebarOpen, setLearnTabletPianoHeight } = useSettings();
   const { state, actions } = useMusic();
   const isSidebarOpen = settings.ui.learnSidebar.isOpen;
   const [useTabletLayout, setUseTabletLayout] = useState(isIPad());
@@ -46,21 +46,27 @@ export function LearnMode() {
   }, [settings.ui.learnSidebar.width, setWidth]);
 
   // Resizable piano height for tablet
-  const handlePianoResize = useCallback((_newHeight: number) => {
-    // Could save to settings if we want persistence
-  }, []);
+  const handlePianoResize = useCallback((newHeight: number) => {
+    setLearnTabletPianoHeight(newHeight);
+  }, [setLearnTabletPianoHeight]);
 
   const {
     height: pianoHeight,
     isResizing: isPianoResizing,
     handleMouseDown: handlePianoMouseDown,
-    handleTouchStart: handlePianoTouchStart
+    handleTouchStart: handlePianoTouchStart,
+    setHeight: setPianoHeight
   } = useResizable({
-    initialHeight: 280,
+    initialHeight: settings.ui.learnTabletPiano.height,
     minHeight: 200,
     maxHeight: 500,
     onResize: handlePianoResize,
   });
+
+  // Update piano height from settings if it changes
+  useEffect(() => {
+    setPianoHeight(settings.ui.learnTabletPiano.height);
+  }, [settings.ui.learnTabletPiano.height, setPianoHeight]);
 
   // iPad-optimized layout
   if (useTabletLayout) {
@@ -101,7 +107,7 @@ export function LearnMode() {
               Scale
             </span>
           </label>
-          <Piano startOctave={4} octaveCount={2} showScaleDegrees={true} />
+          <Piano startOctave={4} octaveCount={2} showScaleDegrees={true} adjustHeight={true} />
         </div>
       </div>
     );

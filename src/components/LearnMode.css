@@ -92,22 +92,18 @@
 
 /* Piano container at bottom */
 .tablet-piano-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-end;
+  position: relative;
   flex-shrink: 0;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
   border-top: 2px solid rgba(102, 126, 234, 0.1);
-  padding: 2rem 1rem 1rem;
-  padding-bottom: 1.5rem; /* Extra padding from viewport bottom */
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
-  gap: 0.75rem;
-  position: relative;
 }
 
 /* Piano control toggle */
 .tablet-piano-control {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -119,6 +115,7 @@
   transition: all 0.2s ease;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  z-index: 10;
 }
 
 .tablet-piano-control:hover,

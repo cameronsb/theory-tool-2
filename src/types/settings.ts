@@ -43,6 +43,11 @@ export interface UISettings {
     isOpen: boolean;    // Whether sidebar is open or closed
   };
 
+  // Learn mode tablet piano configuration
+  learnTabletPiano: {
+    height: number;     // Height of tablet piano panel (200-500px)
+  };
+
   // Chord display sort preferences
   chordSort: {
     diatonic: 'default' | 'grouped';  // Sort mode for diatonic chords
@@ -95,6 +100,9 @@ export const DEFAULT_SETTINGS: UserSettings = {
     learnSidebar: {
       width: 420,       // Default: 420px width
       isOpen: true,     // Default: open
+    },
+    learnTabletPiano: {
+      height: 280,      // Default: 280px height
     },
     chordSort: {
       diatonic: 'default',  // Default: default order

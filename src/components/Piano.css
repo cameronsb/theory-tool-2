@@ -9,6 +9,7 @@
 }
 
 .piano-keys {
+  /* Default values (can be overridden by inline styles for flexible mode) */
   --white-key-width: 60px;
   --white-key-height: 240px;
   --black-key-width: 36px;
@@ -22,6 +23,8 @@
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
+  /* Smooth transitions when dimensions change */
+  transition: width 0.2s ease, height 0.2s ease;
 }
 
 /* When glissando is active, prevent pointer events on keys */

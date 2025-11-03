@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState, useCallback } from 'react';
 import { useMusic } from '../hooks/useMusic';
+import { usePianoLayout } from '../hooks/usePianoLayout';
 import { PianoKey } from './PianoKey';
 import { generatePianoKeys, getWhiteKeyCount } from '../utils/pianoUtils';
 import { getScaleNotes, NOTES } from '../utils/musicTheory';
@@ -10,22 +11,37 @@ interface PianoProps {
   startOctave?: number;
   octaveCount?: number;
   showScaleDegrees?: boolean;
+  flexible?: boolean; // Enable dynamic width (octave count) based on container
+  adjustHeight?: boolean; // Enable dynamic height adjustment (disabled by default)
 }
 
 export function Piano({
   startOctave = 4,
   octaveCount = 2,
-  showScaleDegrees = false
+  showScaleDegrees = false,
+  flexible = true,
+  adjustHeight = false
 }: PianoProps) {
   const { state, audio } = useMusic();
-  const pianoRef = useRef<HTMLDivElement>(null);
+  const pianoContainerRef = useRef<HTMLDivElement>(null);
   const [glissandoTouchId, setGlissandoTouchId] = useState<number | null>(null);
   const [lastPlayedKey, setLastPlayedKey] = useState<string | null>(null);
 
+  // Use flexible layout if enabled
+  const layout = usePianoLayout(pianoContainerRef as React.RefObject<HTMLDivElement>, {
+    startOctave,
+    octaveCount,
+    adjustHeight,
+  });
+
+  // Use layout values if flexible, otherwise use props
+  const effectiveStartOctave = flexible ? layout.startOctave : startOctave;
+  const effectiveOctaveCount = flexible ? layout.octaveCount : octaveCount;
+
   // Generate piano keys
   const keys = useMemo(() => {
-    return generatePianoKeys(startOctave, octaveCount);
-  }, [startOctave, octaveCount]);
+    return generatePianoKeys(effectiveStartOctave, effectiveOctaveCount);
+  }, [effectiveStartOctave, effectiveOctaveCount]);
 
   const whiteKeyCount = useMemo(() => getWhiteKeyCount(keys), [keys]);
 
@@ -97,13 +113,15 @@ export function Piano({
   }, [glissandoTouchId]);
 
   return (
-    <div className="piano">
-
+    <div className="piano" ref={pianoContainerRef}>
       <div
-        ref={pianoRef}
         className={`piano-keys ${glissandoTouchId !== null ? 'glissando-active' : ''}`}
         style={{
           '--white-key-count': whiteKeyCount,
+          '--white-key-width': flexible ? `${layout.whiteKeyWidth}px` : undefined,
+          '--white-key-height': flexible ? `${layout.whiteKeyHeight}px` : undefined,
+          '--black-key-width': flexible ? `${layout.blackKeyWidth}px` : undefined,
+          '--black-key-height': flexible ? `${layout.blackKeyHeight}px` : undefined,
         } as React.CSSProperties}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
