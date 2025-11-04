@@ -29,7 +29,7 @@
 
 ### 🚧 Phase 4: Visual Polish (Specs 1.4-1.7)
 - [x] Replace emoji icons with proper icons
-- [ ] Convert rotary volume knobs to sliders
+- [x] Convert rotary volume knobs to sliders
 - [ ] Persistent playback controls (transport bar)
 - [ ] Tempo/BPM editor UI
 
@@ -98,6 +98,28 @@
 - `src/components/ChordTimeline.css`
 
 **Status:** Phase 4 partially complete (Spec 1.4 done)
+
+### 2025-11-03: Session 3
+
+**Converted Rotary Volume Knobs to Vertical Sliders (Spec 1.5):**
+- Replaced VolumeKnob with VolumeSlider in ChordTimeline (Master + Chords)
+- Replaced VolumeKnob with VolumeSlider in DrumTrack (Drums)
+- All sliders use vertical orientation per spec
+- Features:
+  - 120px height (per spec requirement)
+  - Native HTML5 range input for touch-friendliness
+  - Numeric percentage display at top
+  - Label below slider ("Master", "Chords", "Drums")
+  - Color-coded sliders matching previous knob colors
+  - Smooth gradient fill indicating current level
+  - Touch-optimized (48px target on touch devices)
+  - Works on both desktop and iPad
+
+**Files Modified:**
+- `src/components/ChordTimeline.tsx`
+- `src/components/DrumTrack.tsx`
+
+**Status:** Phase 4 significantly complete (Specs 1.4 & 1.5 done)
 
 ---
 

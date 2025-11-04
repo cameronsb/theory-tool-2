@@ -1,6 +1,6 @@
 import { useMusic } from '../hooks/useMusic';
 import { DrumSequencer } from './DrumSequencer';
-import { VolumeKnob } from './VolumeKnob';
+import { VolumeSlider } from './VolumeSlider';
 import './DrumTrack.css';
 
 export function DrumTrack() {
@@ -28,12 +28,12 @@ export function DrumTrack() {
             {measuresNeeded} {measuresNeeded === 1 ? 'measure' : 'measures'}
           </div>
         </div>
-        <VolumeKnob
+        <VolumeSlider
           value={settings.volume.tracks.drums}
           onChange={(v) => actions.setTrackVolume('drums', v)}
-          size={36}
           color="#4facfe"
-          label="Vol"
+          label="Drums"
+          orientation="vertical"
         />
       </div>
       <div className="drum-track-content">

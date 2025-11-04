@@ -5,7 +5,7 @@ import { useGrid } from '../hooks/useGrid';
 import { getChordFrequencies } from '../utils/musicTheory';
 import { Ruler } from './Ruler';
 import { ChordBlock } from './ChordBlock';
-import { VolumeKnob } from './VolumeKnob';
+import { VolumeSlider } from './VolumeSlider';
 import type { ChordBlock as ChordBlockType } from '../types/music';
 import './ChordTimeline.css';
 
@@ -156,19 +156,19 @@ export function ChordTimeline() {
             </div>
           </div>
           <div className="volume-controls">
-            <VolumeKnob
+            <VolumeSlider
               value={settings.volume.master}
               onChange={actions.setMasterVolume}
-              size={36}
               color="#667eea"
               label="Master"
+              orientation="vertical"
             />
-            <VolumeKnob
+            <VolumeSlider
               value={settings.volume.tracks.chords}
               onChange={(v) => actions.setTrackVolume('chords', v)}
-              size={36}
               color="#764ba2"
               label="Chords"
+              orientation="vertical"
             />
           </div>
           {chordBlocks.length > 0 && (
