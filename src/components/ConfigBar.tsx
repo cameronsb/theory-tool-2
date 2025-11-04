@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useMusic } from '../hooks/useMusic';
+import { useSettings } from '../hooks/useSettings';
 import { NOTES } from '../utils/musicTheory';
+import { VolumeSlider } from './VolumeSlider';
 import './ConfigBar.css';
 
 type Mode = 'learn' | 'build';
@@ -14,6 +16,7 @@ interface ConfigBarProps {
 
 export function ConfigBar({ mode, onModeChange }: ConfigBarProps) {
   const { state, actions } = useMusic();
+  const { settings } = useSettings();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -71,6 +74,17 @@ export function ConfigBar({ mode, onModeChange }: ConfigBarProps) {
       </button>
 
       <div className={`config-controls ${menuOpen ? 'open' : ''}`}>
+        <div className="control-group control-group-volume">
+          <label>Master Volume</label>
+          <VolumeSlider
+            value={settings.volume.master}
+            onChange={actions.setMasterVolume}
+            color="#667eea"
+            label=""
+            orientation="horizontal"
+          />
+        </div>
+
         <div className="control-group">
           <label>Key</label>
           <select

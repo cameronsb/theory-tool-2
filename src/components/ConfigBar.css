@@ -125,6 +125,10 @@
   gap: 0.25rem;
 }
 
+.control-group-volume {
+  min-width: 180px;
+}
+
 .control-group label {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.6);
