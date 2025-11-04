@@ -39,12 +39,13 @@ export function useAudioEngine() {
                 masterGain.connect(context.destination);
 
                 // Load acoustic grand piano soundfont
+                // CRITICAL: Route through masterGain so master volume affects piano/chords
                 const instrument = await Soundfont.instrument(
                     context,
                     "acoustic_grand_piano",
                     {
                         soundfont: "MusyngKite",
-                        // You can also use "FluidR3_GM" for a different sound
+                        destination: masterGain, // Route to master gain instead of speakers
                     }
                 );
 
