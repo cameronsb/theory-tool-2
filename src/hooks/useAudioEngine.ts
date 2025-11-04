@@ -35,7 +35,7 @@ export function useAudioEngine() {
 
                 // Create master gain node for volume control
                 const masterGain = context.createGain();
-                masterGain.gain.value = 1.0; // Will be controlled by master volume setting
+                masterGain.gain.value = 1.5; // Start at 1.5x for louder default output
                 masterGain.connect(context.destination);
 
                 // Load acoustic grand piano soundfont
@@ -68,7 +68,7 @@ export function useAudioEngine() {
         initAudio();
     }, []);
 
-    const playNote = useCallback(async (frequency: number, duration = 0.3, volume = 1.2) => {
+    const playNote = useCallback(async (frequency: number, duration = 0.3, volume = 1.5) => {
         const { instrument, initialized, context } = audioRef.current;
         if (!instrument || !initialized || !context) {
             console.warn('Audio engine not ready yet');
@@ -84,11 +84,11 @@ export function useAudioEngine() {
         const midiNote = frequencyToMidi(frequency);
 
         // Play the note with the sampled piano sound - use currentTime for immediate playback
-        // Increased base gain from 0.8 to 1.2 for louder output
+        // Increased base gain to 1.5 for louder output
         instrument.play(midiNote, context.currentTime, { duration, gain: volume });
     }, []);
 
-    const playChord = useCallback(async (frequencies: number[], duration = 0.8, volume = 1.0) => {
+    const playChord = useCallback(async (frequencies: number[], duration = 0.8, volume = 1.3) => {
         const { instrument, initialized, context } = audioRef.current;
         if (!instrument || !initialized || !context) {
             console.warn('Audio engine not ready yet');
@@ -101,7 +101,7 @@ export function useAudioEngine() {
         }
 
         // Play all notes simultaneously - use currentTime for immediate playback
-        // Increased base gain from 0.6 to 1.0 for louder output
+        // Increased base gain to 1.3 for louder output
         const now = context.currentTime;
         frequencies.forEach((freq) => {
             const midiNote = frequencyToMidi(freq);
@@ -109,7 +109,7 @@ export function useAudioEngine() {
         });
     }, []);
 
-    const playKick = useCallback((time?: number, volume = 1.5) => {
+    const playKick = useCallback((time?: number, volume = 2.0) => {
         const { context, masterGain } = audioRef.current;
         if (!context || !masterGain) return;
 
@@ -123,8 +123,8 @@ export function useAudioEngine() {
         osc.frequency.setValueAtTime(150, when);
         osc.frequency.exponentialRampToValueAtTime(0.01, when + duration);
 
-        // Increased base volume from 1.0 to 1.5 for louder drums
-        gain.gain.setValueAtTime(1.5 * volume, when);
+        // Increased base volume to 2.0 for louder drums
+        gain.gain.setValueAtTime(2.0 * volume, when);
         gain.gain.exponentialRampToValueAtTime(0.001, when + duration);
 
         osc.connect(gain);
@@ -134,7 +134,7 @@ export function useAudioEngine() {
         osc.stop(when + duration + 0.01);
     }, []);
 
-    const playSnare = useCallback((time?: number, volume = 1.5) => {
+    const playSnare = useCallback((time?: number, volume = 2.0) => {
         const { context, masterGain } = audioRef.current;
         if (!context || !masterGain) return;
 
@@ -153,7 +153,7 @@ export function useAudioEngine() {
         noise.buffer = buffer;
 
         const noiseGain = context.createGain();
-        noiseGain.gain.setValueAtTime(1.0 * volume, when); // Increased from 0.7
+        noiseGain.gain.setValueAtTime(1.3 * volume, when); // Increased from 0.7
         noiseGain.gain.exponentialRampToValueAtTime(0.01, when + 0.2);
 
         // Add tonal component
@@ -161,7 +161,7 @@ export function useAudioEngine() {
         const oscGain = context.createGain();
         osc.frequency.value = 200;
 
-        oscGain.gain.setValueAtTime(0.5 * volume, when); // Increased from 0.3
+        oscGain.gain.setValueAtTime(0.7 * volume, when); // Increased from 0.3
         oscGain.gain.exponentialRampToValueAtTime(0.01, when + 0.1);
 
         noise.connect(noiseGain);
@@ -176,7 +176,7 @@ export function useAudioEngine() {
         osc.stop(when + 0.1);
     }, []);
 
-    const playHiHat = useCallback((time?: number, volume = 1.5) => {
+    const playHiHat = useCallback((time?: number, volume = 2.0) => {
         const { context, masterGain } = audioRef.current;
         if (!context || !masterGain) return;
 
@@ -199,7 +199,7 @@ export function useAudioEngine() {
         highpass.frequency.value = 7000;
 
         const gain = context.createGain();
-        gain.gain.setValueAtTime(0.5 * volume, when); // Increased from 0.3
+        gain.gain.setValueAtTime(0.7 * volume, when); // Increased from 0.3
         gain.gain.exponentialRampToValueAtTime(0.01, when + 0.05);
 
         noise.connect(highpass);
@@ -213,8 +213,9 @@ export function useAudioEngine() {
     const setMasterVolume = useCallback((volume: number) => {
         const { masterGain } = audioRef.current;
         if (!masterGain) return;
-        // Clamp volume between 0 and 1
-        masterGain.gain.value = Math.max(0, Math.min(1, volume));
+        // Scale volume: 0.0 = silent, 1.0 = 1.5x gain for louder output
+        const scaledVolume = volume * 1.5;
+        masterGain.gain.value = Math.max(0, Math.min(1.5, scaledVolume));
     }, []);
 
     return {
