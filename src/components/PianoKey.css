@@ -208,6 +208,19 @@
   }
 }
 
+/* MIDI active state - subtle glow effect */
+.piano-key.midi-active {
+  box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.5);
+}
+
+.piano-key.white.midi-active {
+  box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.5);
+}
+
+.piano-key.black.midi-active {
+  box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.6);
+}
+
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
   .piano-key {

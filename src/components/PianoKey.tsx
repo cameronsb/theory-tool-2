@@ -15,6 +15,7 @@ interface PianoKeyProps {
   mode: 'major' | 'minor';
   showScaleLabels?: boolean; // Show labels even without background highlighting
   isGlissandoActive?: boolean; // Whether glissando mode is active (mouse down or touch)
+  isMidiActive?: boolean; // Whether this key is currently pressed via MIDI
 }
 
 
@@ -27,7 +28,8 @@ export function PianoKey({
   selectedKey,
   mode,
   showScaleLabels = false,
-  isGlissandoActive = false
+  isGlissandoActive = false,
+  isMidiActive = false
 }: PianoKeyProps) {
   const [isPressed, setIsPressed] = useState(false);
   const [touchId, setTouchId] = useState<number | null>(null);
@@ -106,9 +108,9 @@ export function PianoKey({
 
   return (
     <div
-      className={`piano-key ${keyData.isBlack ? 'black' : 'white'} ${isPressed ? 'pressed' : ''} ${
+      className={`piano-key ${keyData.isBlack ? 'black' : 'white'} ${isPressed || isMidiActive ? 'pressed' : ''} ${
         isInChord ? 'in-chord' : isInScale ? 'in-scale' : ''
-      }`}
+      } ${isMidiActive ? 'midi-active' : ''}`}
       style={{ left: leftPosition }}
       onMouseDown={handleMouseDown}
       onMouseEnter={handleMouseEnter}

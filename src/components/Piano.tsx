@@ -1,6 +1,7 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react';
+import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { useMusic } from '../hooks/useMusic';
 import { usePianoLayout } from '../hooks/usePianoLayout';
+import { useMidiInput } from '../hooks/useMidiInput';
 import { PianoKey } from './PianoKey';
 import { generatePianoKeys, getWhiteKeyCount } from '../utils/pianoUtils';
 import { getScaleNotes, NOTES } from '../utils/musicTheory';
@@ -27,6 +28,9 @@ export function Piano({
 
   // Track glissando state (mouse down or touch active)
   const [isGlissandoActive, setIsGlissandoActive] = useState(false);
+
+  // Track active MIDI notes
+  const [activeMidiNotes, setActiveMidiNotes] = useState<Set<number>>(new Set());
 
   // Use flexible layout if enabled
   const layout = usePianoLayout(pianoContainerRef as React.RefObject<HTMLDivElement>, {
@@ -70,6 +74,53 @@ export function Piano({
     await audio.playNote(frequency);
   };
 
+  // MIDI to frequency conversion
+  const midiToFrequency = useCallback((midiNote: number): number => {
+    return 440 * Math.pow(2, (midiNote - 69) / 12);
+  }, []);
+
+  // MIDI note handlers
+  const handleMidiNoteOn = useCallback((midiNote: number, velocity: number) => {
+    const frequency = midiToFrequency(midiNote);
+    const volume = (velocity / 127) * 0.8; // Normalize velocity to 0-0.8
+    console.log(`MIDI Note On: ${midiNote}, frequency: ${frequency}Hz, velocity: ${velocity}`);
+
+    // Add to active MIDI notes
+    setActiveMidiNotes(prev => new Set(prev).add(midiNote));
+
+    audio.playNote(frequency, 0.3, volume);
+  }, [midiToFrequency, audio]);
+
+  const handleMidiNoteOff = useCallback((midiNote: number) => {
+    console.log(`MIDI Note Off: ${midiNote}`);
+
+    // Remove from active MIDI notes
+    setActiveMidiNotes(prev => {
+      const next = new Set(prev);
+      next.delete(midiNote);
+      return next;
+    });
+  }, []);
+
+  // Initialize MIDI
+  const midi = useMidiInput({
+    onNoteOn: handleMidiNoteOn,
+    onNoteOff: handleMidiNoteOff,
+  });
+
+  // Log MIDI status
+  useEffect(() => {
+    if (midi.isSupported) {
+      if (midi.isConnected) {
+        console.log('MIDI keyboard connected:', midi.devices);
+      } else {
+        console.log('MIDI supported but no devices connected');
+      }
+    } else {
+      console.log('MIDI not supported in this browser');
+    }
+  }, [midi.isSupported, midi.isConnected, midi.devices]);
+
   // Global mouse up listener to end glissando
   useEffect(() => {
     const handleGlobalMouseUp = () => {
@@ -93,6 +144,31 @@ export function Piano({
 
   return (
     <div className="piano" ref={pianoContainerRef}>
+      {midi.isConnected && (
+        <div style={{
+          position: 'absolute',
+          top: '8px',
+          right: '8px',
+          padding: '4px 8px',
+          background: '#22c55e',
+          color: 'white',
+          fontSize: '12px',
+          borderRadius: '4px',
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px'
+        }}>
+          <span style={{
+            width: '8px',
+            height: '8px',
+            background: 'white',
+            borderRadius: '50%',
+            animation: 'pulse 2s infinite'
+          }} />
+          MIDI: {midi.devices[0]}
+        </div>
+      )}
       <div
         className={`piano-keys ${isGlissandoActive ? 'glissando-active' : ''}`}
         style={{
@@ -123,6 +199,7 @@ export function Piano({
             mode={state.song.mode}
             showScaleLabels={scaleNotes.has(keyData.baseNote)}
             isGlissandoActive={isGlissandoActive}
+            isMidiActive={activeMidiNotes.has(keyData.midiNumber)}
           />
         ))}
       </div>
