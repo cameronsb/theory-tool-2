@@ -15,6 +15,10 @@ An interactive music theory learning tool that visualizes chord relationships wi
 - **Visualize the piano** — see exactly which notes make up each chord
 - **Learn scale degrees** — the piano shows roman numerals and intervals
 
+<p align="center">
+  <img src="docs/tool-demo.gif" alt="Theory Tool Demo" width="800" />
+</p>
+
 ## Features
 
 ### Diatonic Chord Display

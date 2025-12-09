@@ -39,10 +39,9 @@ export function ChordTab({
       console.error('Error playing chord:', error);
     }
 
-    // If keyboard preview is enabled, show on piano
-    if (state.keyboardPreviewEnabled) {
-      actions.selectChord(rootNote, intervals, numeral);
-    }
+    // Always track the selected chord in state (even if keyboard preview is off)
+    // This ensures the selection persists when toggling the preview on/off
+    actions.selectChord(rootNote, intervals, numeral);
 
     // Activate this tab to show detail panel
     onActivate();

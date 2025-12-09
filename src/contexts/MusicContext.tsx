@@ -175,8 +175,6 @@ function musicReducer(state: MusicState, action: MusicAction): MusicState {
             return {
                 ...state,
                 keyboardPreviewEnabled: !state.keyboardPreviewEnabled,
-                // Clear selected chords when toggling off
-                selectedChords: state.keyboardPreviewEnabled ? [] : state.selectedChords,
             };
 
         case "TOGGLE_IN_SCALE_COLORS":

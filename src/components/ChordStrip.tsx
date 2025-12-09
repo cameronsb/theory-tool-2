@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMusic } from '../hooks/useMusic';
 import { useSettings } from '../hooks/useSettings';
 import { getScaleChords, getBorrowedChords, getChordFrequencies } from '../utils/musicTheory';
@@ -27,6 +27,13 @@ export function ChordStrip({ layout = 'default' }: ChordStripProps) {
 
   const allChords = [...diatonicChords, ...borrowedChords];
   const activeChord = activeChordIndex !== null ? allChords[activeChordIndex] : null;
+
+  // Clear active chord when key or mode changes
+  useEffect(() => {
+    setActiveChordIndex(null);
+    setActiveModifiers(new Set());
+    setCurrentIntervals([]);
+  }, [key, mode]);
 
   const handleChordActivate = (index: number, baseIntervals: number[]) => {
     setActiveChordIndex(index);
@@ -81,8 +88,9 @@ export function ChordStrip({ layout = 'default' }: ChordStripProps) {
       console.error('Error playing chord:', error);
     }
 
-    // Update keyboard preview if enabled
-    if (state.keyboardPreviewEnabled && activeChord) {
+    // Always update selected chord state (even if keyboard preview is off)
+    // This ensures the selection persists when toggling the preview on/off
+    if (activeChord) {
       actions.selectChord(rootNote, newIntervals, activeChord.numeral);
     }
   };
@@ -169,7 +177,7 @@ export function ChordStrip({ layout = 'default' }: ChordStripProps) {
             intervals={chord.intervals}
             type={chord.type}
             isDiatonic={true}
-            isActive={activeChordIndex === index && !showBorrowed}
+            isActive={activeChordIndex === index}
             onActivate={() => {
               handleChordActivate(index, chord.intervals);
             }}

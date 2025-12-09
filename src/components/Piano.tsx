@@ -56,18 +56,20 @@ export function Piano({
     return new Set(notes);
   }, [state.song.key, state.song.mode]);
 
-  // Get chord notes for highlighting
+  // Get chord notes for highlighting (only when keyboard preview is enabled)
   const chordNotes = useMemo(() => {
     const notes = new Set<Note>();
-    state.selectedChords.forEach((chord) => {
-      const rootIndex = NOTES.indexOf(chord.rootNote);
-      chord.intervals.forEach((interval) => {
-        const noteIndex = (rootIndex + interval) % 12;
-        notes.add(NOTES[noteIndex]);
+    if (state.keyboardPreviewEnabled) {
+      state.selectedChords.forEach((chord) => {
+        const rootIndex = NOTES.indexOf(chord.rootNote);
+        chord.intervals.forEach((interval) => {
+          const noteIndex = (rootIndex + interval) % 12;
+          notes.add(NOTES[noteIndex]);
+        });
       });
-    });
+    }
     return notes;
-  }, [state.selectedChords]);
+  }, [state.selectedChords, state.keyboardPreviewEnabled]);
 
   const handleKeyPress = async (frequency: number) => {
     await audio.playNote(frequency);
