@@ -8,6 +8,8 @@
  * - Volume management
  */
 
+import type { Player } from 'soundfont-player';
+
 /**
  * Audio engine state
  * Tracks the initialization and loading status of the audio system
@@ -17,7 +19,7 @@ export interface AudioEngine {
   context: AudioContext | null;
 
   /** Soundfont player instrument */
-  instrument: any | null; // Using 'any' for soundfont-player type
+  instrument: Player | null;
 
   /** Whether the audio engine has been initialized */
   initialized: boolean;

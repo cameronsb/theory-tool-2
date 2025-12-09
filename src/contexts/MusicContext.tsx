@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 import { createContext, useReducer, useCallback, useEffect } from "react";
 import type { Note, Mode, SelectedChord, ChordDisplayMode, ChordInProgression, Song, ChordBlock, DrumPattern, DrumBlock } from "../types/music";
+import type { Player } from "soundfont-player";
 import { useAudioEngine } from "../hooks/useAudioEngine";
 import { useSettings } from "../hooks/useSettings";
 import type { UserSettings } from "../types/settings";
-// Note: Drum patterns feature removed (was only used in Build mode)
 
 export type NoteSubdivision = "whole" | "quarter" | "eighth";
 
@@ -490,7 +490,7 @@ interface MusicContextType {
         playHiHat: (time?: number, volume?: number) => void;
         loading: boolean;
         audioContext: AudioContext | null;
-        instrument: any | null;
+        instrument: Player | null;
     };
     actions: {
         selectKey: (key: Note) => void;

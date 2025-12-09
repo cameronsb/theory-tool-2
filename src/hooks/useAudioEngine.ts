@@ -30,7 +30,7 @@ export function useAudioEngine() {
 
             try {
                 const AudioContextClass =
-                    window.AudioContext || (window as any).webkitAudioContext;
+                    window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
                 const context = new AudioContextClass();
 
                 // Create master gain node for volume control

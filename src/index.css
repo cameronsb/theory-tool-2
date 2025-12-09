@@ -130,6 +130,19 @@
   --key-chord-black: #ff9f40;           /* Bright orange */
   --key-chord-black-hover: #e68a30;     /* Darkens on hover (more tactile) */
   --key-chord-black-pressed: #cc7a2a;   /* Even darker pressed */
+
+  /* Base piano key colors */
+  --key-white: #ffffff;
+  --key-white-hover: #f9f9f9;
+  --key-white-pressed: #e8e8e8;
+  --key-black: #1a1a1a;
+  --key-black-light: #2a2a2a;
+  --key-black-lighter: #3a3a3a;
+  --key-black-dark: #0a0a0a;
+
+  /* MIDI active glow */
+  --midi-glow: rgba(34, 197, 94, 0.5);
+  --midi-glow-strong: rgba(34, 197, 94, 0.6);
 }
 
 /* ========================================

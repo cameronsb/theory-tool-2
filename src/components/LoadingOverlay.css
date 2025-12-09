@@ -43,7 +43,7 @@
 .loading-key.black {
   width: 16px;
   height: 40px;
-  background: #1a1a1a;
+  background: var(--key-black, #1a1a1a);
   margin-left: -8px;
   margin-right: -8px;
   z-index: 1;

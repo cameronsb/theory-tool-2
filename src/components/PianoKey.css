@@ -30,7 +30,7 @@
 .piano-key.white {
   width: var(--white-key-width);
   height: var(--white-key-height);
-  background: white;
+  background: var(--key-white);
   border: 1px solid rgba(0, 0, 0, 0.4);
   border-top: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -38,11 +38,11 @@
 }
 
 .piano-key.white:hover {
-  background: #f9f9f9;
+  background: var(--key-white-hover);
 }
 
 .piano-key.white.pressed {
-  background: #e8e8e8;
+  background: var(--key-white-pressed);
   transform: translateY(2px);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -51,7 +51,7 @@
 .piano-key.black {
   width: var(--black-key-width);
   height: var(--black-key-height);
-  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  background: linear-gradient(180deg, var(--key-black-light) 0%, var(--key-black) 100%);
   border: 1px solid #000;
   border-top: none;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
@@ -60,11 +60,11 @@
 }
 
 .piano-key.black:hover {
-  background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
+  background: linear-gradient(180deg, var(--key-black-lighter) 0%, var(--key-black-light) 100%);
 }
 
 .piano-key.black.pressed {
-  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  background: linear-gradient(180deg, var(--key-black) 0%, var(--key-black-dark) 100%);
   transform: translateY(2px);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
@@ -211,15 +211,15 @@
 
 /* MIDI active state - subtle glow effect */
 .piano-key.midi-active {
-  box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 8px 2px var(--midi-glow);
 }
 
 .piano-key.white.midi-active {
-  box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 8px 2px var(--midi-glow);
 }
 
 .piano-key.black.midi-active {
-  box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.6);
+  box-shadow: 0 0 8px 2px var(--midi-glow-strong);
 }
 
 /* Touch device optimizations */

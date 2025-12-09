@@ -79,13 +79,13 @@ export function useMidiInput({ onNoteOn, onNoteOff }: MidiInputOptions) {
           }
         };
 
-        access.addEventListener('statechange', handleStateChange as EventListener);
+        access.addEventListener('statechange', handleStateChange as unknown as EventListener);
 
         return () => {
           access.inputs.forEach((input) => {
             input.removeEventListener('midimessage', handleMIDIMessage as EventListener);
           });
-          access.removeEventListener('statechange', handleStateChange as EventListener);
+          access.removeEventListener('statechange', handleStateChange as unknown as EventListener);
         };
       })
       .catch(() => {
