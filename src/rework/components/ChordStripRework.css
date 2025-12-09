@@ -1,64 +1,99 @@
-/* Chord Strip Container - Horizontal layout for all diatonic chords */
+/* ========================================
+ * Chord Strip Container
+ * Horizontal layout for diatonic chords
+ * ======================================== */
+
 .chord-strip-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  background: var(--surface, #252938);
-  border-radius: 12px;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-muted);
 }
+
+/* ========================================
+ * Header
+ * ======================================== */
 
 .chord-strip-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-muted);
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .chord-strip-header-title {
   margin: 0;
-  font-size: 16px;
+  font-family: var(--font-ui);
+  font-size: var(--text-md);
   font-weight: 600;
-  color: var(--text-primary, #e8e9f0);
+  color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .chord-strip-header-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
+  flex-shrink: 0;
 }
+
+/* Mobile: stack header vertically */
+@media (max-width: 480px) {
+  .chord-strip-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chord-strip-header-title {
+    font-size: var(--text-sm);
+  }
+
+  .chord-strip-header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* ========================================
+ * Header Toggle
+ * ======================================== */
 
 .header-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 8px;
-  transition: background 0.2s ease;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
   min-height: 44px;
 }
 
 .header-toggle:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-muted);
 }
 
 .toggle-checkbox {
   appearance: none;
-  width: 44px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  width: 40px;
+  height: 22px;
+  background: var(--bg-muted);
+  border-radius: 11px;
   position: relative;
   cursor: pointer;
-  transition: background 0.3s ease;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: background var(--transition-base);
+  border: 1px solid var(--border);
 }
 
 .toggle-checkbox:checked {
-  background: var(--primary-accent, #5b5fc7);
-  border-color: var(--primary-accent, #5b5fc7);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .toggle-checkbox::after {
@@ -70,79 +105,91 @@
   border-radius: 50%;
   top: 2px;
   left: 2px;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
 .toggle-checkbox:checked::after {
-  transform: translateX(20px);
+  transform: translateX(18px);
 }
 
 .toggle-label {
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 500;
-  color: var(--text-secondary, #a0a5b8);
+  color: var(--text-secondary);
   user-select: none;
 }
 
+/* ========================================
+ * Borrowed Toggle Button
+ * ======================================== */
+
 .borrowed-toggle-btn {
-  padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   background: transparent;
-  color: var(--text-secondary, #a0a5b8);
-  font-size: 13px;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
 }
 
 .borrowed-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: var(--bg-muted);
+  border-color: var(--border);
+  color: var(--text-primary);
 }
 
 .borrowed-toggle-btn.active {
-  background: var(--primary-accent, #5b5fc7);
-  border-color: var(--primary-accent, #5b5fc7);
-  color: white;
+  background: var(--borrowed-bg);
+  border-color: var(--borrowed);
+  color: var(--borrowed);
 }
 
-/* Horizontal chord tabs - all 7 diatonic chords visible */
+/* ========================================
+ * Horizontal Chord Tabs Grid
+ * ======================================== */
+
 .chord-tabs-horizontal {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
 }
 
-/* Ensure minimum touch target size on iPad Pro 12.9" */
 @media (min-width: 1024px) {
   .chord-tabs-horizontal {
-    gap: 12px;
+    gap: var(--space-3);
   }
 }
 
 .borrowed-chords-row {
-  margin-top: 4px;
-  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  margin-top: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
 }
 
-/* Chord detail panel - compact layout with piano preview */
+/* ========================================
+ * Chord Detail Panel
+ * ======================================== */
+
 .chord-detail-panel {
-  background: var(--surface-elevated, #2a2d3e);
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-top: var(--space-3);
   display: flex;
-  gap: 16px;
+  gap: var(--space-4);
   align-items: flex-start;
+  border: 1px solid var(--border-muted);
 }
 
 .chord-detail-left {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .chord-detail-right {
@@ -150,76 +197,84 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   min-width: 0;
 }
 
 .chord-detail-title {
-  margin: 0 0 4px 0;
-  font-size: 11px;
+  margin: 0 0 var(--space-1) 0;
+  font-size: var(--text-xs);
   font-weight: 600;
-  color: var(--text-secondary, #a0a5b8);
+  color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
-/* Compact modifier button grid - square buttons */
+/* ========================================
+ * Modifier Button Grid
+ * ======================================== */
+
 .chord-modifier-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .chord-modifier-btn {
   aspect-ratio: 1;
   min-width: 44px;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-primary, #e8e9f0);
-  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-muted);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .chord-modifier-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
-}
-
-.chord-modifier-btn:active {
-  transform: scale(0.95);
+  background: var(--bg-subtle);
+  border-color: var(--text-muted);
 }
 
 .chord-modifier-btn.active {
-  background: var(--chord-highlight, #f4a261);
-  border-color: var(--chord-highlight, #f4a261);
-  color: #000;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-inverse);
 }
 
-/* SVG keyboard preview in detail panel */
+/* ========================================
+ * Piano Preview in Detail Panel
+ * ======================================== */
+
 .chord-detail-piano-preview {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  border: 1px solid var(--border-muted);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1;
+  min-width: 200px;
 }
 
 .chord-detail-piano-preview .piano-visualization {
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
+  max-height: 140px;
   height: auto;
-  max-height: none;
 }
+
+/* ========================================
+ * Responsive: Tablet
+ * ======================================== */
 
 @media (max-width: 834px) {
   .chord-detail-panel {
@@ -231,36 +286,42 @@
   }
 }
 
-/* Sidebar layout */
+/* ========================================
+ * Sidebar Layout
+ * ======================================== */
+
 .chord-strip-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 16px;
+  gap: var(--space-6);
+  padding: var(--space-4);
 }
 
 .chord-strip-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .chord-strip-title {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--text-primary, #e8e9f0);
+  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .chord-tabs-vertical {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
-/* Responsive adjustments for smaller iPads */
+/* ========================================
+ * Responsive: Small tablets
+ * ======================================== */
+
 @media (max-width: 834px) {
   .chord-tabs-horizontal {
     overflow-x: auto;
