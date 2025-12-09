@@ -84,12 +84,10 @@ src/
 ├── components/          # React components
 │   ├── Piano.tsx        # Interactive piano keyboard
 │   ├── ConfigBar.tsx    # Key/scale selection controls
+│   ├── ChordStrip.tsx   # Horizontal chord display
+│   ├── ChordTab.tsx     # Individual chord cards
+│   ├── ChordInfoBlock.tsx # Variation panel
 │   └── ...
-├── rework/              # Redesigned UI components
-│   └── components/
-│       ├── ChordStripRework.tsx   # Horizontal chord display
-│       ├── ChordTabRework.tsx     # Individual chord cards
-│       └── ChordInfoBlock.tsx     # Variation panel
 ├── hooks/
 │   ├── useAudioEngine.ts    # Web Audio + soundfont loading
 │   ├── useMusic.ts          # Music state management

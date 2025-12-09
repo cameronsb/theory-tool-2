@@ -1,5 +1,5 @@
-import { getChordDisplayName } from '../../utils/musicTheory';
-import type { Note, ChordType } from '../../types/music';
+import { getChordDisplayName } from '../utils/musicTheory';
+import type { Note, ChordType } from '../types/music';
 import './ChordInfoBlock.css';
 
 interface ChordInfoBlockProps {

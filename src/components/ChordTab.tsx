@@ -1,9 +1,9 @@
-import { useMusic } from '../../hooks/useMusic';
-import { getFullChordName, getChordFrequencies, NOTES } from '../../utils/musicTheory';
-import type { Note, ChordType } from '../../types/music';
-import './ChordTabRework.css';
+import { useMusic } from '../hooks/useMusic';
+import { getFullChordName, getChordFrequencies, NOTES } from '../utils/musicTheory';
+import type { Note, ChordType } from '../types/music';
+import './ChordTab.css';
 
-interface ChordTabReworkProps {
+interface ChordTabProps {
   numeral: string;
   rootNote: Note;
   intervals: number[];
@@ -15,7 +15,7 @@ interface ChordTabReworkProps {
   layout?: 'default' | 'sidebar';
 }
 
-export function ChordTabRework({
+export function ChordTab({
   numeral,
   rootNote,
   intervals,
@@ -25,7 +25,7 @@ export function ChordTabRework({
   onActivate,
   showMiniPreview = false,
   layout = 'default'
-}: ChordTabReworkProps) {
+}: ChordTabProps) {
   const { audio, actions, state } = useMusic();
 
   const handleClick = () => {

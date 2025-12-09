@@ -1,13 +1,13 @@
 import { useCallback, useEffect } from 'react';
-import { Piano } from '../../components/Piano';
-import { ChordStripRework } from './ChordStripRework';
-import { useSettings } from '../../hooks/useSettings';
-import { useMusic } from '../../hooks/useMusic';
-import { useResizable } from '../../hooks/useResizable';
-import { SIZES } from '../../config';
-import './LearnModeRework.css';
+import { Piano } from './Piano';
+import { ChordStrip } from './ChordStrip';
+import { useSettings } from '../hooks/useSettings';
+import { useMusic } from '../hooks/useMusic';
+import { useResizable } from '../hooks/useResizable';
+import { SIZES } from '../config';
+import './LearnMode.css';
 
-export function LearnModeRework() {
+export function LearnMode() {
   const { settings, setLearnTabletPianoHeight } = useSettings();
   const { state, actions } = useMusic();
 
@@ -40,7 +40,7 @@ export function LearnModeRework() {
       <div className="tablet-content-area">
         {/* Compact horizontal chord strip showing all diatonic chords */}
         <div className="tablet-chord-strip-area">
-          <ChordStripRework />
+          <ChordStrip />
         </div>
       </div>
 

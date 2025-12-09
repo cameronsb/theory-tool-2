@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import { useMusic } from '../../hooks/useMusic';
-import { useSettings } from '../../hooks/useSettings';
-import { getScaleChords, getBorrowedChords, getChordFrequencies } from '../../utils/musicTheory';
-import { ChordTabRework } from './ChordTabRework';
+import { useMusic } from '../hooks/useMusic';
+import { useSettings } from '../hooks/useSettings';
+import { getScaleChords, getBorrowedChords, getChordFrequencies } from '../utils/musicTheory';
+import { ChordTab } from './ChordTab';
 import { ChordInfoBlock } from './ChordInfoBlock';
-import { PianoVisualization } from '../../components/PianoVisualization';
-import { CHORD_MODIFIERS } from '../../config/chords';
-import type { Note } from '../../types/music';
-import './ChordStripRework.css';
+import { PianoVisualization } from './PianoVisualization';
+import { CHORD_MODIFIERS } from '../config/chords';
+import type { Note } from '../types/music';
+import './ChordStrip.css';
 
-interface ChordStripReworkProps {
+interface ChordStripProps {
   layout?: 'default' | 'sidebar';
 }
 
-export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) {
+export function ChordStrip({ layout = 'default' }: ChordStripProps) {
   const { state, audio, actions } = useMusic();
   const { settings, setShowMiniPreview } = useSettings();
   const { key, mode } = state.song;
@@ -95,7 +95,7 @@ export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) 
           <h3 className="chord-strip-title">Diatonic Chords</h3>
           <div className="chord-tabs-vertical">
             {diatonicChords.map((chord, index) => (
-              <ChordTabRework
+              <ChordTab
                 key={chord.numeral}
                 numeral={chord.numeral}
                 rootNote={chord.rootNote}
@@ -114,7 +114,7 @@ export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) 
           <h3 className="chord-strip-title">Borrowed Chords</h3>
           <div className="chord-tabs-vertical">
             {borrowedChords.map((chord, index) => (
-              <ChordTabRework
+              <ChordTab
                 key={chord.numeral}
                 numeral={chord.numeral}
                 rootNote={chord.rootNote}
@@ -162,7 +162,7 @@ export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) 
       {/* Horizontal chord tabs - all 7 diatonic chords visible */}
       <div className="chord-tabs-horizontal">
         {diatonicChords.map((chord, index) => (
-          <ChordTabRework
+          <ChordTab
             key={chord.numeral}
             numeral={chord.numeral}
             rootNote={chord.rootNote}
@@ -182,7 +182,7 @@ export function ChordStripRework({ layout = 'default' }: ChordStripReworkProps) 
       {showBorrowed && (
         <div className="chord-tabs-horizontal borrowed-chords-row">
           {borrowedChords.map((chord, index) => (
-            <ChordTabRework
+            <ChordTab
               key={chord.numeral}
               numeral={chord.numeral}
               rootNote={chord.rootNote}
