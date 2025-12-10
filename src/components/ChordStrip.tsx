@@ -205,8 +205,7 @@ export function ChordStrip({ layout = 'default' }: ChordStripProps) {
         </div>
       )}
 
-      {/* Detail panel for active chord - compact layout with piano preview */}
-      {activeChord && (
+      {activeChord ? (
         <div className="chord-detail-panel">
           <div className="chord-detail-left">
             <h4 className="chord-detail-title">Variations</h4>
@@ -241,6 +240,10 @@ export function ChordStrip({ layout = 'default' }: ChordStripProps) {
               />
             </div>
           </div>
+        </div>
+      ) : (
+        <div className="chord-detail-panel chord-detail-empty">
+          <p className="chord-detail-hint">Select a chord above to explore variations and see it on the keyboard</p>
         </div>
       )}
     </div>

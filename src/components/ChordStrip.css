@@ -272,6 +272,19 @@
   height: auto;
 }
 
+.chord-detail-empty {
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.chord-detail-hint {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
 /* ========================================
  * Responsive: Tablet
  * ======================================== */
