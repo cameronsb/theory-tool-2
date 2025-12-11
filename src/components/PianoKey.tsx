@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { PianoKeyData } from '../utils/pianoUtils';
 import { getScaleDegreeNumeral } from '../utils/musicTheory';
 import type { Note } from '../types/music';
@@ -33,68 +33,97 @@ export function PianoKey({
   isGlissandoActive = false,
   isMidiActive = false
 }: PianoKeyProps) {
-  const [isPressed, setIsPressed] = useState(false);
-  const [touchId, setTouchId] = useState<number | null>(null);
+  // Separate mouse and touch tracking for correct multi-touch behavior
+  const [isMousePressed, setIsMousePressed] = useState(false);
 
-  const handlePress = useCallback(() => {
-    setIsPressed(true);
+  // Use ref for touch IDs (avoids re-render on every touch change)
+  // State tracks whether any touches are active (for re-rendering)
+  const activeTouchesRef = useRef<Set<number>>(new Set());
+  const [hasTouches, setHasTouches] = useState(false);
+
+  // Combined pressed state for visual feedback
+  const isPressed = isMousePressed || hasTouches;
+
+  // Play the note
+  const playNote = useCallback(() => {
     onPress(keyData.frequency);
   }, [keyData.frequency, onPress]);
 
-  const handleRelease = useCallback(() => {
-    setIsPressed(false);
+  // ===== Mouse Handlers =====
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMousePressed(true);
+    playNote();
+  }, [playNote]);
+
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMousePressed(false);
   }, []);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    handlePress();
-  };
-
-  const handleMouseUp = (e: React.MouseEvent) => {
-    e.preventDefault();
-    handleRelease();
-  };
-
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback(() => {
     // Play note when mouse enters while dragging (glissando)
-    if (isGlissandoActive) {
-      handlePress();
+    if (isGlissandoActive && !isMousePressed) {
+      setIsMousePressed(true);
+      playNote();
     }
-  };
+  }, [isGlissandoActive, isMousePressed, playNote]);
 
-  const handleMouseLeave = (e: React.MouseEvent) => {
+  const handleMouseLeave = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    handleRelease();
-  };
+    setIsMousePressed(false);
+  }, []);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  // ===== Touch Handlers =====
+  // Properly handles multi-touch: tracks each touch by ID
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-    if (e.touches.length > 0 && touchId === null) {
-      const touch = e.touches[0];
-      setTouchId(touch.identifier);
-      handlePress();
+
+    const wasEmpty = activeTouchesRef.current.size === 0;
+
+    // Add all touches that started on this key
+    // changedTouches contains ONLY the touches that triggered this event
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      activeTouchesRef.current.add(e.changedTouches[i].identifier);
     }
-  };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Check if this touch end is for our tracked touch
-    const changedTouches = Array.from(e.changedTouches);
-    if (touchId !== null && changedTouches.some(t => t.identifier === touchId)) {
-      setTouchId(null);
-      handleRelease();
-    }
-  };
+    // Update state for re-render
+    setHasTouches(true);
 
-  const handleTouchCancel = (e: React.TouchEvent) => {
-    e.preventDefault();
-    if (touchId !== null) {
-      setTouchId(null);
-      handleRelease();
+    // Play sound only on first touch (not additional fingers on same key)
+    if (wasEmpty) {
+      playNote();
     }
-  };
+  }, [playNote]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+
+    // Remove all touches that ended
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      activeTouchesRef.current.delete(e.changedTouches[i].identifier);
+    }
+
+    // Only update state when all touches have ended
+    if (activeTouchesRef.current.size === 0) {
+      setHasTouches(false);
+    }
+  }, []);
+
+  const handleTouchCancel = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+
+    // Remove all cancelled touches
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      activeTouchesRef.current.delete(e.changedTouches[i].identifier);
+    }
+
+    if (activeTouchesRef.current.size === 0) {
+      setHasTouches(false);
+    }
+  }, []);
 
   // Get scale degree numeral if in scale OR if showing labels
   const scaleDegree = (isInScale || showScaleLabels)
