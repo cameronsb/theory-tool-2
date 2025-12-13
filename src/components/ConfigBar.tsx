@@ -171,13 +171,9 @@ export function ConfigBar() {
             </div>
           </section>
 
-          {/* About Section */}
-          <section className="settings-section settings-section-about">
-            <h3 className="section-title">About</h3>
-            <p className="about-text">
-              A music theory learning tool for exploring chords, scales, and progressions.
-            </p>
-            <p className="about-credit">Built by Cameron Brown</p>
+          {/* Tutorial Section */}
+          <section className="settings-section">
+            <h3 className="section-title">Tutorial</h3>
             <button
               className="replay-tutorial-btn"
               onClick={() => {
@@ -187,6 +183,15 @@ export function ConfigBar() {
             >
               Replay Tutorial
             </button>
+          </section>
+
+          {/* About Section */}
+          <section className="settings-section settings-section-about">
+            <h3 className="section-title">About</h3>
+            <p className="about-text">
+              A music theory learning tool for exploring chords, scales, and progressions.
+            </p>
+            <p className="about-credit">Built by Cameron Brown</p>
           </section>
         </div>
       </aside>
