@@ -17,7 +17,7 @@ export const SIZES = {
 
   // Learn mode piano height (tablet layout)
   learnTabletPiano: {
-    min: 200,
+    min: 150, // Lowered to allow more room for taller chord cards on mobile
     max: 500,
     default: 300,
   },

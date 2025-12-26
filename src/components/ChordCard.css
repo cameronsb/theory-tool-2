@@ -132,8 +132,8 @@
 
 .chord-card-modifiers {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
   padding: var(--space-2);
   background: var(--bg-surface);
   border-top: 1px solid var(--border-muted);
@@ -168,6 +168,27 @@
   background: var(--accent);
   border-color: var(--accent);
   color: var(--text-inverse);
+}
+
+/* Locked state: shows a dot indicator */
+.chord-card-modifier-btn.locked {
+  position: relative;
+}
+
+.chord-card-modifier-lock-dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-inverse);
+  opacity: 0.9;
+}
+
+/* Non-active locked state (unlocked via tap but still locked) */
+.chord-card-modifier-btn.locked:not(.active) .chord-card-modifier-lock-dot {
+  background: var(--accent);
 }
 
 /* ========================================
@@ -254,3 +275,4 @@
     font-size: 7px;
   }
 }
+
